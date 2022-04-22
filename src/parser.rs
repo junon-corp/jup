@@ -3,7 +3,7 @@
 // Copyright (c) Junon, Antonin Hérault
 
 //! What about private `Parser::about...()` associated functions ? \
-//! They return a boolean value, if the returned value is `true`, instruction 
+//! They return a boolean value, if the returned value is `true`, instruction
 //! `continue` will be called in the run loop
 
 use std::fmt;
@@ -37,10 +37,10 @@ pub struct Parser {
 impl fmt::Debug for Parser {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         for line in &self.parsed {
-            if line.len() < 1 {
-                write!(f, "\n")?;
+            if line.is_empty() {
+                writeln!(f)?;
             } else {
-                write!(f, "{:?}\n", line)?;
+                writeln!(f, "{:?}", line)?;
             }
         }
         Ok(())
@@ -48,9 +48,9 @@ impl fmt::Debug for Parser {
 }
 
 impl Parser {
-    /// Create a new `Parser` object from the content retrieved by reading a 
+    /// Create a new `Parser` object from the content retrieved by reading a
     /// file at the given path \
-    /// If the file path is invalid or the file is unreadable, the function 
+    /// If the file path is invalid or the file is unreadable, the function
     /// will returns an `io::Error` \
     /// NOTE The path is not checked, it should be valid before giving it as
     /// parameter to this associated function
@@ -59,27 +59,27 @@ impl Parser {
         Ok(Self::from_source_code(&source_code))
     }
 
-    pub fn from_source_code(source_code: &String) -> Self {
+    pub fn from_source_code(source_code: &str) -> Self {
         Self {
-            content: source_code.clone(),
+            content: source_code.to_owned(),
             parsed: vec![],
 
             token: String::new(),
             line: vec![],
-        
+
             was_double_char: false,
             // The assembly line will be pushed as "this"
             is_asm_code: false,
             // Comments are ignored in the parsed vector
             is_comment: false,
-        
+
             // Variables for strings creation
             is_string: false,
             string_content: String::new(),
         }
     }
 
-    /// Parsed content is not returned in this function, SEE `::parsed()` 
+    /// Parsed content is not returned in this function, SEE `::parsed()`
     pub fn run(&mut self) {
         for (i, c) in self.content.clone().chars().enumerate() {
             // Comments will be everytime skipped
@@ -88,11 +88,11 @@ impl Parser {
             }
 
             // SEE This file's documentation
-            if 
-                self.about_strings(c) || 
+            if
+                self.about_strings(c) ||
                 self.about_asm(c) ||
                 self.about_new_lines(c) ||
-                self.about_others(c, i) 
+                self.about_others(c, i)
             {
                 continue;
             }
@@ -107,7 +107,7 @@ impl Parser {
         }
     }
 
-    /// Return an immutable 2D vector of the tokenized source code 
+    /// Return an immutable 2D vector of the tokenized source code
     pub fn parsed(&self) -> &Vec<Vec<Token>> {
         &self.parsed
     }
@@ -123,14 +123,14 @@ impl Parser {
     }
 
     fn about_strings(&mut self, c: char) -> bool {
-        if c == Token::StringDot.to_string().chars().nth(0).unwrap() {
+        if c == Token::StringDot.to_string().chars().next().unwrap() {
             if self.is_string { // end of string
                 self.is_string = false;
 
                 self.line.push(
                     Token::from_string(
                         &format!(
-                            "{}{}{}", 
+                            "{}{}{}",
                             Token::StringDot.to_string(),
                             self.string_content,
                             Token::StringDot.to_string()
@@ -150,10 +150,10 @@ impl Parser {
 
             // Don't care of the other possibilities, we want raw characters in
             // the string
-            return true; 
+            return true;
         }
 
-        return false;
+        false
     }
 
     fn about_asm(&mut self, c: char) -> bool {
@@ -165,13 +165,13 @@ impl Parser {
             return true;
         }
 
-        return false;
+        false
     }
 
     fn about_new_lines(&mut self, c: char) -> bool {
         if c == '\n' {
             self.push_token(); // push the line's last token
-            
+
             // Push the new line into `self.parsed`
             if self.line != vec![] {
                 self.parsed.push(self.line.clone());
@@ -185,7 +185,7 @@ impl Parser {
             return true;
         }
 
-        return false;
+        false
     }
 
     fn about_others(&mut self, c: char, i: usize) -> bool {
@@ -194,8 +194,8 @@ impl Parser {
 
             // ... to create another one with the character
             if c != ' ' && !self.was_double_char {
-                if 
-                    i != self.content.len() - 1 && 
+                if
+                    i != self.content.len() - 1 &&
                     c == self.content.chars().nth(i + 1).unwrap()
                 {
                     let double_char_as_token = Token::from_string(
@@ -206,7 +206,7 @@ impl Parser {
                         return true;
                     }
                     self.line.push(double_char_as_token);
-                    
+
                     self.was_double_char = true;
                     return true;
                 }
@@ -227,7 +227,7 @@ impl Parser {
         }
 
         self.token.push(c); // it's still the same token
-        return false;
+        false
     }
 
     fn push_token(&mut self) {
@@ -247,7 +247,7 @@ impl Parser {
 
 #[test]
 fn from_file() {
-    let file_path = Path::new("tests/test1.ju"); 
+    let file_path = Path::new("tests/test1.ju");
     let mut parser = Parser::from_path(file_path).unwrap();
     parser.run();
 
@@ -256,11 +256,8 @@ fn from_file() {
 
 #[test]
 fn from_source_code() {
-    let source_code = String::from(
-        "func main {\n".to_owned() +
-        "    ret ok\n" +
-        "}\n // annoying comment"
-    );
+    let source_code = "func main {\n".to_owned() +
+        "    ret ok\n" + "}\n // annoying comment";
 
     let mut parser = Parser::from_source_code(&source_code);
     parser.run();
