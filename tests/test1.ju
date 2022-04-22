@@ -1,0 +1,13 @@
+// This file is part of "jup"
+// Under the MIT License
+// Copyright (c) Junon, Antonin Hérault
+
+func foo(a: int, b: int) {
+    ret a + b
+}
+
+func main { // annoying comment for the parser
+    foo(5, 6)
+    ret ok
+}
+// Another comment
