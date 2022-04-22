@@ -97,8 +97,8 @@ impl Token {
 
     /// The string as `&String` is converted into a `&str` before returning
     /// a `::from_str()` call
-    pub fn from_string(string: &String) -> Self {
-        Self::token_from_str(string.as_str())
+    pub fn from_string(string: &str) -> Self {
+        Self::token_from_str(string)
     }
 }
 
