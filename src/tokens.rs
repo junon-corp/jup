@@ -33,7 +33,7 @@ pub enum Token {
     Other(String),
 
     /// Avoid `Option` usage \
-    /// WARNING : It's not a a "real" token from the language 
+    /// WARNING : It's not a a "real" token from the language
     None,
 }
 
@@ -56,10 +56,10 @@ impl ToString for Token {
             Self::StringDot => "'",
             Self::TypeDef => ":",
             Self::Variable => "let",
-        
+
             Self::Print => "print",
             Self::Exit => "exit",
-        
+
             Self::Other(ref string) => &*string,
             Self::None => "",
         }.to_string()
@@ -68,9 +68,9 @@ impl ToString for Token {
 
 impl Token {
     /// Convert a string into a `Token` object \
-    /// If the string does not correspond to any token, it will return a 
+    /// If the string does not correspond to any token, it will return a
     /// `Token::Other` object with contained string into
-    pub fn from_str(string: &str) -> Self {
+    pub fn token_from_str(string: &str) -> Self {
         match string {
             "@" => Self::Assembly,
             "=" => Self::Assign,
@@ -87,22 +87,22 @@ impl Token {
             "'" => Self::StringDot,
             ":" => Self::TypeDef,
             "let" => Self::Variable,
-    
+
             "print" => Self::Print,
             "exit" => Self::Exit,
-            
+
             _ => Self::Other(string.to_string()),
         }
     }
-    
+
     /// The string as `&String` is converted into a `&str` before returning
     /// a `::from_str()` call
-    pub fn from_string(string: &String) -> Self {
-        Self::from_str(string.as_str())
+    pub fn from_string(string: &str) -> Self {
+        Self::token_from_str(string)
     }
 }
 
-// Don't forget to add "-- --nocapture" flags to the command line arguments 
+// Don't forget to add "-- --nocapture" flags to the command line arguments
 // when you execute `cargo test`
 
 #[test]
@@ -120,5 +120,5 @@ fn from_string() {
 #[test]
 fn from_str() {
     let string: &str = "func";
-    println!("{:?}", Token::from_str(string));
+    println!("{:?}", Token::token_from_str(string));
 }
