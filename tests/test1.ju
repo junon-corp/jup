@@ -2,6 +2,9 @@
 // Under the MIT License
 // Copyright (c) Junon, Antonin Hérault
 
+static a: str = 'hello world'
+static b: str = 'hello world'
+
 func foo(a: int, b: int) {
     ret a + b
 }

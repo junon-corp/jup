@@ -140,6 +140,8 @@ impl Parser {
 
                 // Reset the string for the next
                 self.string_content = String::new();
+            } else {
+                self.is_string = true;
             }
 
             return true;
