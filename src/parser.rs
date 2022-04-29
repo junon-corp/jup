@@ -99,10 +99,10 @@ impl<'a> Parser<'a> {
         }
 
         // Push the last token and the last line
-        if self.token != String::new() {
+        if !self.token.is_empty() {
             self.line.push(Token::from_string(&self.token));
         }
-        if self.line != vec![] {
+        if !self.line.is_empty() {
             self.parsed.push(self.line.clone());
         }
     }
@@ -175,7 +175,7 @@ impl<'a> Parser<'a> {
             self.push_token(); // push the line's last token
 
             // Push the new line into `self.parsed`
-            if self.line != vec![] {
+            if !self.line.is_empty() {
                 self.parsed.push(self.line.clone());
                 self.line = vec![]; // reset line
             }
@@ -233,7 +233,7 @@ impl<'a> Parser<'a> {
     }
 
     fn push_token(&mut self) {
-        if *self.token == String::new() { // useless if void
+        if self.token.is_empty() { // useless if void
             return;
         }
 
