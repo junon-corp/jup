@@ -36,17 +36,17 @@ pub struct Parser {
 
 impl fmt::Debug for Parser {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "---- ")?;
+        write!(f, "---- \n")?;
 
         for token in &self.parsed {
             if *token == Token::NewLine {
-                writeln!(f, "{:?}", Token::NewLine)?;
+                write!(f, "{:?}\n", Token::NewLine)?;
                 continue;
             }
             write!(f, "{:?} ", token)?;
         }
 
-        writeln!(f, "---- ")?;
+        write!(f, "---- \n")?;
 
         Ok(())
     }
