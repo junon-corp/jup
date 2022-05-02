@@ -28,10 +28,11 @@ pub enum Token {
     Print,
     Exit,
 
-    /// Example : "foo" or something that is not a real token
+    /// Example : "foo" or something like that is not a real token
     /// NOTE It can be a string
     Other(String),
-
+    // Avoid using a 2D table and permit to do not respect line breaks
+    NewLine, 
     /// Avoid `Option` usage \
     /// WARNING : It's not a a "real" token from the language
     None,
@@ -61,6 +62,7 @@ impl ToString for Token {
             Self::Exit => "exit",
 
             Self::Other(ref string) => &*string,
+            Self::NewLine => "\n",
             Self::None => "",
         }.to_string()
     }
@@ -91,6 +93,7 @@ impl Token {
             "print" => Self::Print,
             "exit" => Self::Exit,
 
+            "\n" => Self::NewLine,
             _ => Self::Other(string.to_string()),
         }
     }

@@ -12,16 +12,16 @@ use std::io;
 use std::io::Read;
 use std::path::Path;
 
-use crate::tokens::Token;
+use crate::lang::tokens::Token;
 
 /// A way to get a parsed file content as tokens list \
 /// Could be called as `Tokenizer`
 pub struct Parser {
     content: String,
-    parsed: Vec<Vec<Token>>,
+    parsed: Vec<Token>,
 
+    /// Current token as string
     token: String,
-    line: Vec<Token>,
 
     was_double_char: bool,
     /// The assembly line will be pushed as "this"
@@ -36,13 +36,18 @@ pub struct Parser {
 
 impl fmt::Debug for Parser {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        for line in &self.parsed {
-            if line.is_empty() {
-                writeln!(f)?;
-            } else {
-                writeln!(f, "{:?}", line)?;
+        write!(f, "---- \n")?;
+
+        for token in &self.parsed {
+            if *token == Token::NewLine {
+                write!(f, "{:?}\n", Token::NewLine)?;
+                continue;
             }
+            write!(f, "{:?} ", token)?;
         }
+
+        write!(f, "---- \n")?;
+
         Ok(())
     }
 }
@@ -65,7 +70,6 @@ impl Parser {
             parsed: vec![],
 
             token: String::new(),
-            line: vec![],
 
             was_double_char: false,
             // The assembly line will be pushed as "this"
@@ -98,17 +102,20 @@ impl Parser {
             }
         }
 
-        // Push the last token and the last line
+        // Push the last token
         if self.token != String::new() {
-            self.line.push(Token::from_string(&self.token));
+            self.push_token();
         }
-        if self.line != vec![] {
-            self.parsed.push(self.line.clone());
+
+        // Always put a "NewLine" token at the end if not here
+        if self.token != Token::NewLine.to_string() {
+            self.token = Token::NewLine.to_string();
+            self.push_token();
         }
     }
 
     /// Return an immutable 2D vector of the tokenized source code
-    pub fn parsed(&self) -> &Vec<Vec<Token>> {
+    pub fn parsed(&self) -> &Vec<Token> {
         &self.parsed
     }
 
@@ -127,7 +134,7 @@ impl Parser {
             if self.is_string { // end of string
                 self.is_string = false;
 
-                self.line.push(
+                self.parsed.push(
                     Token::from_string(
                         &format!(
                             "{}{}{}",
@@ -174,11 +181,10 @@ impl Parser {
         if c == '\n' {
             self.push_token(); // push the line's last token
 
-            // Push the new line into `self.parsed`
-            if self.line != vec![] {
-                self.parsed.push(self.line.clone());
-                self.line = vec![]; // reset line
-            }
+            // By this way, comments are ignored but `Token::NewLine` is pushed
+            // Don't forget it's important to know there is a line here to count
+            // lines
+            self.parsed.push(Token::NewLine);
 
             // Resets
             self.is_asm_code = false;
@@ -207,7 +213,7 @@ impl Parser {
                         self.is_comment = true;
                         return true;
                     }
-                    self.line.push(double_char_as_token);
+                    self.parsed.push(double_char_as_token);
 
                     self.was_double_char = true;
                     return true;
@@ -216,12 +222,12 @@ impl Parser {
                 if self.is_asm_code {
                     let token_string = format!("{}", c);
                     if Token::from_string(&token_string) == Token::Comma {
-                        self.line.push(Token::Comma);
+                        self.parsed.push(Token::Comma);
                     } else {
-                        self.line.push(Token::Other(format!("{}", c)));
+                        self.parsed.push(Token::Other(format!("{}", c)));
                     }
                 } else {
-                    self.line.push(Token::from_string(&format!("{}", c)));
+                    self.parsed.push(Token::from_string(&format!("{}", c)));
                 }
             }
             self.was_double_char = false;
@@ -238,9 +244,9 @@ impl Parser {
         }
 
         if self.is_asm_code {
-            self.line.push(Token::Other(self.token.clone()));
+            self.parsed.push(Token::Other(self.token.clone()));
         } else {
-            self.line.push(Token::from_string(&self.token.clone()))
+            self.parsed.push(Token::from_string(&self.token.clone()))
         }
 
         self.token = String::new(); // reset for the next
