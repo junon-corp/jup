@@ -16,8 +16,8 @@ use crate::lang::tokens::Token;
 
 /// A way to get a parsed file content as tokens list \
 /// Could be called as `Tokenizer`
-pub struct Parser {
-    content: String,
+pub struct Parser<'a> {
+    content: &'a str,
     parsed: Vec<Token>,
 
     /// Current token as string
@@ -34,7 +34,7 @@ pub struct Parser {
     string_content: String,
 }
 
-impl fmt::Debug for Parser {
+impl<'a> fmt::Debug for Parser<'a> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "---- ")?;
 
@@ -52,21 +52,21 @@ impl fmt::Debug for Parser {
     }
 }
 
-impl Parser {
+impl<'a> Parser<'a> {
     /// Create a new `Parser` object from the content retrieved by reading a
     /// file at the given path \
     /// If the file path is invalid or the file is unreadable, the function
     /// will returns an `io::Error` \
     /// NOTE The path is not checked, it should be valid before giving it as
     /// parameter to this associated function
-    pub fn from_path(file_path: &Path) -> Result<Self, io::Error> {
+    pub fn from_path(file_path: &Path) -> Result<String, io::Error> {
         let source_code = Self::read_file_content(file_path)?;
-        Ok(Self::from_source_code(&source_code))
+        Ok(source_code)
     }
 
-    pub fn from_source_code(source_code: &str) -> Self {
+    pub fn from_source_code(source_code: &'a str) -> Self {
         Self {
-            content: source_code.to_owned(),
+            content: source_code,
             parsed: vec![],
 
             token: String::new(),
@@ -85,7 +85,7 @@ impl Parser {
 
     /// Parsed content is not returned in this function, SEE `::parsed()`
     pub fn run(&mut self) {
-        for (i, c) in self.content.clone().chars().enumerate() {
+        for (i, c) in self.content.chars().enumerate() {
             // Comments will be everytime skipped
             if c != '\n' && self.is_comment {
                 continue;
@@ -256,7 +256,8 @@ impl Parser {
 #[test]
 fn from_file() {
     let file_path = Path::new("tests/test1.ju");
-    let mut parser = Parser::from_path(file_path).unwrap();
+    let source = Parser::from_path(file_path).unwrap();
+    let mut parser = Parser::from_source_code(&source);
     parser.run();
 
     println!("{:?}", parser);
