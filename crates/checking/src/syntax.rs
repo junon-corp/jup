@@ -12,7 +12,7 @@ use rslog::{
 use crate::lang::tokens::Token;
 
 pub struct SyntaxChecker<'a> {
-    source: &'a String,
+    source: &'a str,
     parsed: &'a Vec<Token>,
     logger: Logger,
 
