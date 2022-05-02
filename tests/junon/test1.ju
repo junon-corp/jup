@@ -2,15 +2,23 @@
 // Under the MIT License
 // Copyright (c) Junon, Antonin Hérault
 
+aa bb cc
+dd
+
+ee
+
 static a: str = 'hello world'
 static b: str = 'hello world'
+static c: int = 5
 
 func foo(a: int, b: int) {
     ret a + b
 }
 
 func main { // annoying comment for the parser
-    foo(5, 6)
+    // foo(5, 6)
     ret ok
 }
 // Another comment
+
+ff
