@@ -12,7 +12,7 @@ use rslog::{
 use crate::lang::tokens::Token;
 
 pub struct SyntaxChecker<'a> {
-    source: &'a String,
+    source: &'a str,
     parsed: &'a Vec<Token>,
     logger: Logger,
 
@@ -35,7 +35,7 @@ pub struct SyntaxChecker<'a> {
 }
 
 impl<'a> SyntaxChecker<'a> {
-    pub fn new(source: &'a String, parsed: &'a Vec<Token>) -> Self {
+    pub fn new(source: &'a str, parsed: &'a Vec<Token>) -> Self {
         // Retrieve all `NewLine` tokens positions
         let mut new_lines: Vec<usize> = vec![];
         for (i, token) in parsed.iter().enumerate() {
