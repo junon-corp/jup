@@ -13,7 +13,7 @@ use crate::lang::tokens::Token;
 
 pub struct SyntaxChecker<'a> {
     source: &'a str,
-    parsed: &'a Vec<Token>,
+    parsed: &'a [Token],
     logger: Logger,
 
     previous_token: &'a Token,
