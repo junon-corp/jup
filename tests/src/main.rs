@@ -11,11 +11,11 @@ fn main() -> Result<(), std::io::Error> {
     for i in 1..2 {
         let source: String = format!("junon/test{}.ju", i);
 
-        let mut parser = Parser::from_path(&Path::new(&source))?;
+        let mut parser = Parser::from_path(Path::new(&source))?;
         parser.run();
 
         // println!("{:?}", parser);
-    
+
         let mut checker = SyntaxChecker::new(&source, parser.parsed());
         checker.run();
 
