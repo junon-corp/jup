@@ -96,15 +96,15 @@ impl<'a> SyntaxChecker<'a> {
         self.token_i_on_line += 1;
     }
 
-    /// Checks the previous token when it's not already skipped with 
+    /// Checks the previous token when it's not already skipped with
     /// `break_line`
     pub fn check_token(&mut self) {
         let cause = source_to_string(
-            self.source.to_string(), 
-            self.line_i, 
+            self.source.to_string(),
+            self.line_i,
             self.token_i
         );
-        
+
         match *self.previous_token {
             Token::Assembly => { self.break_line = true; },
             Token::Assign => {},
@@ -118,10 +118,10 @@ impl<'a> SyntaxChecker<'a> {
             Token::Return => { self.break_line = true; },
             Token::StringDot => {},
             Token::TypeDef => {},
-            Token::Variable | Token::Static => { 
-                self.break_line = true; 
+            Token::Variable | Token::Static => {
+                self.break_line = true;
             }
-        
+
             // System calls
             Token::Print => { self.break_line = true; },
             Token::Exit => { self.break_line = true; },
@@ -131,7 +131,7 @@ impl<'a> SyntaxChecker<'a> {
             }
 
             // First token of the parsed content
-            Token::None => return,
+            Token::None => (),
 
             _ => {
                 self.logger.add_log(
@@ -150,7 +150,7 @@ impl<'a> SyntaxChecker<'a> {
             }
         }
     }
-    
+
     fn generate_line(&self) -> Vec<Token> {
         let i = self.new_lines[self.line_i - 1];
 
@@ -164,7 +164,7 @@ impl<'a> SyntaxChecker<'a> {
 
         self.parsed[i..j - 1].to_vec()
     }
-    
+
     fn fmt_generate_line(&self) -> String {
         line_to_string(&self.generate_line(), self.token_i_on_line)
     }
