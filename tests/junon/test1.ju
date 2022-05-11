@@ -11,11 +11,11 @@ static a: str = 'hello world'
 static b: str = 'hello world'
 static c: int = 5
 
-func foo(a: int, b: int) {
+fun foo(a: int, b: int) {
     ret a + b
 }
 
-func main { // annoying comment for the parser
+fun main { // annoying comment for the parser
     // foo(5, 6)
     ret ok
 }

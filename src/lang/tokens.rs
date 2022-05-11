@@ -48,7 +48,7 @@ impl ToString for Token {
             Self::BracketClose => "}",
             Self::Comma => ",",
             Self::Comment => "//",
-            Self::Function => "func",
+            Self::Function => "fun",
             Self::ParenOpen => "(",
             Self::ParenClose => ")",
             Self::Point => ".",
@@ -80,7 +80,7 @@ impl Token {
             "}" => Self::BracketClose,
             "," => Self::Comma,
             "//" => Self::Comment,
-            "func" => Self::Function,
+            "fun" => Self::Function,
             "(" => Self::ParenOpen,
             ")" => Self::ParenClose,
             "." => Self::Point,
@@ -116,12 +116,12 @@ fn convert_to_string() {
 
 #[test]
 fn from_string() {
-    let string = String::from("func");
+    let string = String::from("fun");
     println!("{:?}", Token::from_string(&string));
 }
 
 #[test]
 fn from_str() {
-    let string: &str = "func";
+    let string: &str = "fun";
     println!("{:?}", Token::token_from_str(string));
 }
