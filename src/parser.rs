@@ -93,9 +93,9 @@ impl Parser {
 
             // SEE This file's documentation
             if
-                self.about_strings(c) ||
-                self.about_asm(c) ||
                 self.about_new_lines(c) ||
+                self.about_asm(c) ||
+                self.about_strings(c) ||
                 self.about_others(c, i)
             {
                 continue;
@@ -122,11 +122,47 @@ impl Parser {
     /// For `Self::from_path()`
     fn read_file_content(file_path: &Path) -> Result<String, io::Error> {
         let mut source_code = String::new();
-
+        
         let mut stream = File::open(file_path)?;
         stream.read_to_string(&mut source_code)?;
-
+        
         Ok(source_code)
+    }
+    
+    fn about_new_lines(&mut self, c: char) -> bool {
+        if c == '\n' {
+            self.push_token(); // push the line's last token
+
+            // By this way, comments are ignored but `Token::NewLine` is pushed
+            // Don't forget it's important to know there is a line here to count
+            // lines
+            self.parsed.push(Token::NewLine);
+
+            // Resets
+            self.is_asm_code = false;
+            self.is_comment = false;
+
+            return true;
+        }
+
+        false
+    }
+
+    fn about_asm(&mut self, c: char) -> bool {
+        if self.is_asm_code {
+            self.token += &format!("{}", c);
+            return true;
+        }
+
+        if c == '@' {
+            self.token = "@".to_string();
+            self.push_token();
+            self.is_asm_code = true;
+
+            return true;
+        }
+
+        false
     }
 
     fn about_strings(&mut self, c: char) -> bool {
@@ -165,38 +201,8 @@ impl Parser {
         false
     }
 
-    fn about_asm(&mut self, c: char) -> bool {
-        if c == '@' {
-            self.token = "@".to_string();
-            self.push_token();
-            self.is_asm_code = true;
-
-            return true;
-        }
-
-        false
-    }
-
-    fn about_new_lines(&mut self, c: char) -> bool {
-        if c == '\n' {
-            self.push_token(); // push the line's last token
-
-            // By this way, comments are ignored but `Token::NewLine` is pushed
-            // Don't forget it's important to know there is a line here to count
-            // lines
-            self.parsed.push(Token::NewLine);
-
-            // Resets
-            self.is_asm_code = false;
-            self.is_comment = false;
-
-            return true;
-        }
-
-        false
-    }
-
     fn about_others(&mut self, c: char, i: usize) -> bool {
+
         if !c.is_alphanumeric() { // should be cut
             self.push_token(); // finish the current token...
 
@@ -219,16 +225,7 @@ impl Parser {
                     return true;
                 }
 
-                if self.is_asm_code {
-                    let token_string = format!("{}", c);
-                    if Token::from_string(&token_string) == Token::Comma {
-                        self.parsed.push(Token::Comma);
-                    } else {
-                        self.parsed.push(Token::Other(format!("{}", c)));
-                    }
-                } else {
-                    self.parsed.push(Token::from_string(&format!("{}", c)));
-                }
+                self.parsed.push(Token::from_string(&format!("{}", c)));
             }
             self.was_double_char = false;
             return true;
@@ -243,12 +240,7 @@ impl Parser {
             return;
         }
 
-        if self.is_asm_code {
-            self.parsed.push(Token::Other(self.token.clone()));
-        } else {
-            self.parsed.push(Token::from_string(&self.token.clone()))
-        }
-
+        self.parsed.push(Token::from_string(&self.token.clone()));
         self.token = String::new(); // reset for the next
     }
 }
