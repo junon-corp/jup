@@ -6,7 +6,7 @@ use crate::lang::tokens::Token;
 
 #[derive(Debug)]
 pub enum RuleItem {
-    /// Used as the rule's operator, the main token of the expression 
+    /// Used as the rule's operator, the main token of the expression
     Main(Token),
 
     Value,
@@ -40,15 +40,33 @@ impl Rule {
         vec![
             rule!(RuleItem::Value, RuleItem::Main(op.clone()), RuleItem::Value),
             rule!(RuleItem::Value, RuleItem::Main(op.clone()), RuleItem::Label),
-            rule!(RuleItem::Value, RuleItem::Main(op.clone()), RuleItem::Expression),
-
+            rule!(
+                RuleItem::Value,
+                RuleItem::Main(op.clone()),
+                RuleItem::Expression
+            ),
             rule!(RuleItem::Label, RuleItem::Main(op.clone()), RuleItem::Value),
             rule!(RuleItem::Label, RuleItem::Main(op.clone()), RuleItem::Label),
-            rule!(RuleItem::Label, RuleItem::Main(op.clone()), RuleItem::Expression),
-
-            rule!(RuleItem::Expression, RuleItem::Main(op.clone()), RuleItem::Value),
-            rule!(RuleItem::Expression, RuleItem::Main(op.clone()), RuleItem::Label),
-            rule!(RuleItem::Expression, RuleItem::Main(op.clone()), RuleItem::Expression),
+            rule!(
+                RuleItem::Label,
+                RuleItem::Main(op.clone()),
+                RuleItem::Expression
+            ),
+            rule!(
+                RuleItem::Expression,
+                RuleItem::Main(op.clone()),
+                RuleItem::Value
+            ),
+            rule!(
+                RuleItem::Expression,
+                RuleItem::Main(op.clone()),
+                RuleItem::Label
+            ),
+            rule!(
+                RuleItem::Expression,
+                RuleItem::Main(op.clone()),
+                RuleItem::Expression
+            ),
         ]
     }
 
@@ -68,56 +86,126 @@ impl Rule {
                     rule!(RuleItem::Main(Token::Assembly)),
                     rule!(RuleItem::Main(Token::Assembly), RuleItem::Value),
                 ]
-            },
+            }
             Token::Assign => {
                 vec![
-                    rule!(RuleItem::Label, RuleItem::Main(Token::Assign), RuleItem::Value),
-                    rule!(RuleItem::Label, RuleItem::Main(Token::Assign), RuleItem::Label),
-                    rule!(RuleItem::Label, RuleItem::Main(Token::Assign), RuleItem::Expression),
+                    rule!(
+                        RuleItem::Label,
+                        RuleItem::Main(Token::Assign),
+                        RuleItem::Value
+                    ),
+                    rule!(
+                        RuleItem::Label,
+                        RuleItem::Main(Token::Assign),
+                        RuleItem::Label
+                    ),
+                    rule!(
+                        RuleItem::Label,
+                        RuleItem::Main(Token::Assign),
+                        RuleItem::Expression
+                    ),
                 ]
-            },
+            }
             Token::Divide => Self::from_operator(&Token::Divide),
             Token::Function => {
                 vec![
                     rule!(RuleItem::Main(Token::Function), RuleItem::Label),
-                    rule!(RuleItem::Main(Token::Function), RuleItem::Label, RuleItem::Token(Token::ParenOpen), RuleItem::Skip, RuleItem::Token(Token::ParenClose)),
+                    rule!(
+                        RuleItem::Main(Token::Function),
+                        RuleItem::Label,
+                        RuleItem::Token(Token::ParenOpen),
+                        RuleItem::Skip,
+                        RuleItem::Token(Token::ParenClose)
+                    ),
                 ]
-            },
+            }
             Token::Minus => Self::from_operator(&Token::Minus),
             Token::Multiply => Self::from_operator(&Token::Multiply),
             Token::Point => {
-                vec![
-                    rule!(RuleItem::Label, RuleItem::Main(Token::Point), RuleItem::Label),
-                ]
-            },
+                vec![rule!(
+                    RuleItem::Label,
+                    RuleItem::Main(Token::Point),
+                    RuleItem::Label
+                )]
+            }
             Token::Plus => Self::from_operator(&Token::Plus),
             Token::Return => Self::from_basic_scheme(&Token::Return),
             Token::Static => {
                 vec![
-                    rule!(RuleItem::Main(Token::Static), RuleItem::Label, RuleItem::Token(Token::TypeDef), RuleItem::Label),
-                    rule!(RuleItem::Main(Token::Static), RuleItem::Label, RuleItem::Token(Token::TypeDef), RuleItem::Label, RuleItem::Token(Token::Assign), RuleItem::Value),
-                    rule!(RuleItem::Main(Token::Static), RuleItem::Label, RuleItem::Token(Token::TypeDef), RuleItem::Label, RuleItem::Token(Token::Assign), RuleItem::Label),
-                    rule!(RuleItem::Main(Token::Static), RuleItem::Label, RuleItem::Token(Token::TypeDef), RuleItem::Label, RuleItem::Token(Token::Assign), RuleItem::Expression),
-                ]
-            },
-            Token::TypeDef => {
-                vec![
-                    rule!(RuleItem::Main(Token::TypeDef), RuleItem::Label),
-                ]
-            },
-            Token::Variable => {
-                vec![
-                    rule!(RuleItem::Main(Token::Variable), RuleItem::Label, RuleItem::Token(Token::TypeDef), RuleItem::Label),
-                    rule!(RuleItem::Main(Token::Variable), RuleItem::Label, RuleItem::Token(Token::TypeDef), RuleItem::Label, RuleItem::Token(Token::Assign), RuleItem::Value),
-                    rule!(RuleItem::Main(Token::Variable), RuleItem::Label, RuleItem::Token(Token::TypeDef), RuleItem::Label, RuleItem::Token(Token::Assign), RuleItem::Label),
-                    rule!(RuleItem::Main(Token::Variable), RuleItem::Label, RuleItem::Token(Token::TypeDef), RuleItem::Label, RuleItem::Token(Token::Assign), RuleItem::Expression),
+                    rule!(
+                        RuleItem::Main(Token::Static),
+                        RuleItem::Label,
+                        RuleItem::Token(Token::TypeDef),
+                        RuleItem::Label
+                    ),
+                    rule!(
+                        RuleItem::Main(Token::Static),
+                        RuleItem::Label,
+                        RuleItem::Token(Token::TypeDef),
+                        RuleItem::Label,
+                        RuleItem::Token(Token::Assign),
+                        RuleItem::Value
+                    ),
+                    rule!(
+                        RuleItem::Main(Token::Static),
+                        RuleItem::Label,
+                        RuleItem::Token(Token::TypeDef),
+                        RuleItem::Label,
+                        RuleItem::Token(Token::Assign),
+                        RuleItem::Label
+                    ),
+                    rule!(
+                        RuleItem::Main(Token::Static),
+                        RuleItem::Label,
+                        RuleItem::Token(Token::TypeDef),
+                        RuleItem::Label,
+                        RuleItem::Token(Token::Assign),
+                        RuleItem::Expression
+                    ),
                 ]
             }
-        
+            Token::TypeDef => {
+                vec![rule!(RuleItem::Main(Token::TypeDef), RuleItem::Label)]
+            }
+            Token::Variable => {
+                vec![
+                    rule!(
+                        RuleItem::Main(Token::Variable),
+                        RuleItem::Label,
+                        RuleItem::Token(Token::TypeDef),
+                        RuleItem::Label
+                    ),
+                    rule!(
+                        RuleItem::Main(Token::Variable),
+                        RuleItem::Label,
+                        RuleItem::Token(Token::TypeDef),
+                        RuleItem::Label,
+                        RuleItem::Token(Token::Assign),
+                        RuleItem::Value
+                    ),
+                    rule!(
+                        RuleItem::Main(Token::Variable),
+                        RuleItem::Label,
+                        RuleItem::Token(Token::TypeDef),
+                        RuleItem::Label,
+                        RuleItem::Token(Token::Assign),
+                        RuleItem::Label
+                    ),
+                    rule!(
+                        RuleItem::Main(Token::Variable),
+                        RuleItem::Label,
+                        RuleItem::Token(Token::TypeDef),
+                        RuleItem::Label,
+                        RuleItem::Token(Token::Assign),
+                        RuleItem::Expression
+                    ),
+                ]
+            }
+
             // System calls
             Token::Print => Self::from_basic_scheme(&Token::Print),
             Token::Exit => Self::from_basic_scheme(&Token::Exit),
-        
+
             _ => vec![],
         }
     }

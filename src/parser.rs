@@ -92,11 +92,10 @@ impl Parser {
             }
 
             // SEE This file's documentation
-            if
-                self.about_new_lines(c) ||
-                self.about_asm(c) ||
-                self.about_strings(c) ||
-                self.about_others(c, i)
+            if self.about_new_lines(c)
+                || self.about_asm(c)
+                || self.about_strings(c)
+                || self.about_others(c, i)
             {
                 continue;
             }
@@ -122,13 +121,13 @@ impl Parser {
     /// For `Self::from_path()`
     fn read_file_content(file_path: &Path) -> Result<String, io::Error> {
         let mut source_code = String::new();
-        
+
         let mut stream = File::open(file_path)?;
         stream.read_to_string(&mut source_code)?;
-        
+
         Ok(source_code)
     }
-    
+
     fn about_new_lines(&mut self, c: char) -> bool {
         if c == '\n' {
             self.push_token(); // push the line's last token
@@ -167,19 +166,16 @@ impl Parser {
 
     fn about_strings(&mut self, c: char) -> bool {
         if c == Token::StringDot.to_string().chars().next().unwrap() {
-            if self.is_string { // end of string
+            if self.is_string {
+                // end of string
                 self.is_string = false;
 
-                self.parsed.push(
-                    Token::from_string(
-                        &format!(
-                            "{}{}{}",
-                            Token::StringDot.to_string(),
-                            self.string_content,
-                            Token::StringDot.to_string()
-                        )
-                    )
-                );
+                self.parsed.push(Token::from_string(&format!(
+                    "{}{}{}",
+                    Token::StringDot.to_string(),
+                    self.string_content,
+                    Token::StringDot.to_string()
+                )));
 
                 // Reset the string for the next
                 self.string_content = String::new();
@@ -190,7 +186,8 @@ impl Parser {
             return true;
         }
 
-        if self.is_string { // string creation
+        if self.is_string {
+            // string creation
             self.string_content.push(c);
 
             // Don't care of the other possibilities, we want raw characters in
@@ -202,19 +199,14 @@ impl Parser {
     }
 
     fn about_others(&mut self, c: char, i: usize) -> bool {
-
-        if !c.is_alphanumeric() { // should be cut
+        if !c.is_alphanumeric() {
+            // should be cut
             self.push_token(); // finish the current token...
 
             // ... to create another one with the character
             if c != ' ' && !self.was_double_char {
-                if
-                    i != self.content.len() - 1 &&
-                    c == self.content.chars().nth(i + 1).unwrap()
-                {
-                    let double_char_as_token = Token::from_string(
-                        &format!("{}{}", c, c)
-                    );
+                if i != self.content.len() - 1 && c == self.content.chars().nth(i + 1).unwrap() {
+                    let double_char_as_token = Token::from_string(&format!("{}{}", c, c));
                     if double_char_as_token == Token::Comment {
                         self.is_comment = true;
                         return true;
@@ -236,7 +228,8 @@ impl Parser {
     }
 
     fn push_token(&mut self) {
-        if *self.token == String::new() { // useless if void
+        if *self.token == String::new() {
+            // useless if void
             return;
         }
 
@@ -256,8 +249,7 @@ fn from_file() {
 
 #[test]
 fn from_source_code() {
-    let source_code = "func main {\n".to_owned() +
-        "    ret ok\n" + "}\n // annoying comment";
+    let source_code = "func main {\n".to_owned() + "    ret ok\n" + "}\n // annoying comment";
 
     let mut parser = Parser::from_source_code(&source_code);
     parser.run();

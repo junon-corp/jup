@@ -2,12 +2,7 @@
 // Under the MIT License
 // Copyright (c) Junon, Antonin Hérault
 
-use rslog::{
-    *,
-    level::LogLevel,
-    log::Log,
-    logger::Logger,
-};
+use rslog::{level::LogLevel, log::Log, logger::Logger, *};
 
 use crate::lang::tokens::Token;
 
@@ -99,32 +94,38 @@ impl<'a> SyntaxChecker<'a> {
     /// Checks the previous token when it's not already skipped with
     /// `break_line`
     pub fn check_token(&mut self) {
-        let cause = source_to_string(
-            self.source.to_string(),
-            self.line_i,
-            self.token_i
-        );
+        let cause = source_to_string(self.source.to_string(), self.line_i, self.token_i);
 
         match *self.previous_token {
-            Token::Assembly => { self.break_line = true; },
-            Token::Assign => {},
-            Token::BracketOpen => {},
-            Token::BracketClose => {},
-            Token::Comma => {},
-            Token::Function => { self.break_line = true; },
-            Token::ParenOpen => {},
-            Token::ParenClose => {},
-            Token::Point => {},
-            Token::Return => { self.break_line = true; },
-            Token::StringDot => {},
-            Token::TypeDef => {},
+            Token::Assembly => {
+                self.break_line = true;
+            }
+            Token::Assign => {}
+            Token::BracketOpen => {}
+            Token::BracketClose => {}
+            Token::Comma => {}
+            Token::Function => {
+                self.break_line = true;
+            }
+            Token::ParenOpen => {}
+            Token::ParenClose => {}
+            Token::Point => {}
+            Token::Return => {
+                self.break_line = true;
+            }
+            Token::StringDot => {}
+            Token::TypeDef => {}
             Token::Variable | Token::Static => {
                 self.break_line = true;
             }
 
             // System calls
-            Token::Print => { self.break_line = true; },
-            Token::Exit => { self.break_line = true; },
+            Token::Print => {
+                self.break_line = true;
+            }
+            Token::Exit => {
+                self.break_line = true;
+            }
             Token::NewLine => {
                 self.token_i_on_line = 0;
                 self.line_i += 1;
@@ -142,10 +143,10 @@ impl<'a> SyntaxChecker<'a> {
                             "{}No valid instruction found for token '{}'",
                             &self.fmt_generate_line(),
                             self.previous_token.to_string()
-                        )
+                        ),
                     )
                     .add_cause(&cause)
-                    .finish()
+                    .finish(),
                 );
             }
         }

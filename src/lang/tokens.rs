@@ -39,7 +39,7 @@ pub enum Token {
     /// NOTE It can be a string, an value like an integer or a float
     Other(String),
     // Avoid using a 2D table and permit to do not respect line breaks
-    NewLine, 
+    NewLine,
     /// Avoid `Option` usage \
     /// WARNING : It's not a a "real" token from the language
     None,
@@ -78,7 +78,8 @@ impl ToString for Token {
             Self::Other(ref string) => &*string,
             Self::NewLine => "\n",
             Self::None => "",
-        }.to_string()
+        }
+        .to_string()
     }
 }
 
