@@ -3,7 +3,7 @@
 // Copyright (c) Junon, Antonin Hérault
 
 use crate::lang::tokens::Token;
-use type_::Type;
+use super::type_::Type;
 
 #[derive(Debug, Clone)]
 pub struct Variable {
@@ -13,6 +13,14 @@ pub struct Variable {
 }
 
 impl Variable {
+    pub fn new(id: Token, type_: Token, value: Token) -> Self {
+        Self {
+            id,
+            type_,
+            value
+        }
+    }
+    
     pub fn id(&self) -> String {
         self.id.to_string()
     }
@@ -25,10 +33,10 @@ impl Variable {
     /// If the value is in fact an expression, the default return register for
     /// any expression is given as "value"
     pub fn value(&self) -> String {
-        match self.value {
-            Token::BracketOpen => "rbx", // TODO : Create a defaults repo
-            Token::None => "0",
-            _ => value,
-        }.to_string(),
+        match &self.value {
+            Token::BracketOpen => "rbx".to_string(), // TODO : Create a defaults repo
+            Token::None => "0".to_string(),
+            tok_value => tok_value.to_string(),
+        }
     }
 }

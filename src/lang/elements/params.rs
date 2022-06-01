@@ -2,6 +2,6 @@
 // Under the MIT License
 // Copyright (c) Junon, Antonin Hérault
 
-use variable::Variable;
+use super::variable::Variable;
 
 pub type Params = Vec<Variable>;
