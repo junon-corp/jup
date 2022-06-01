@@ -241,7 +241,7 @@ impl Tokenizer {
 #[test]
 fn from_file() {
     let file_path = Path::new("tests/test1.ju");
-    let mut Tokenizer = Tokenizer::from_path(file_path).unwrap();
+    let mut tokenizer = Tokenizer::from_path(file_path).unwrap();
     tokenizer.run();
 
     println!("{:?}", tokenizer);
