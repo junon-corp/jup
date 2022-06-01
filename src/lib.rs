@@ -5,4 +5,4 @@
 pub mod checking;
 pub mod lang;
 
-pub mod parser;
+pub mod tokenizer;

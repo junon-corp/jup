@@ -2,7 +2,7 @@
 // Under the MIT License
 // Copyright (c) Junon, Antonin Hérault
 
-//! What about private `Parser::about...()` associated functions ? \
+//! What about private `Tokenizer::about...()` associated functions ? \
 //! They return a boolean value, if the returned value is `true`, instruction
 //! `continue` will be called in the run loop
 
@@ -14,11 +14,11 @@ use std::path::Path;
 
 use crate::lang::tokens::Token;
 
-/// A way to get a parsed file content as tokens list \
+/// A way to get a tokenized file content as tokens list \
 /// Could be called as `Tokenizer`
-pub struct Parser {
+pub struct Tokenizer {
     content: String,
-    parsed: Vec<Token>,
+    tokenized: Vec<Token>,
 
     /// Current token as string
     token: String,
@@ -26,7 +26,7 @@ pub struct Parser {
     was_double_char: bool,
     /// The assembly line will be pushed as "this"
     is_asm_code: bool,
-    /// Comments are ignored in the parsed vector
+    /// Comments are ignored in the tokenized vector
     is_comment: bool,
 
     // Variables for strings creation
@@ -34,11 +34,11 @@ pub struct Parser {
     string_content: String,
 }
 
-impl fmt::Debug for Parser {
+impl fmt::Debug for Tokenizer {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "---- ")?;
 
-        for token in &self.parsed {
+        for token in &self.tokenized {
             if *token == Token::NewLine {
                 writeln!(f, "{:?}", Token::NewLine)?;
                 continue;
@@ -52,8 +52,8 @@ impl fmt::Debug for Parser {
     }
 }
 
-impl Parser {
-    /// Create a new `Parser` object from the content retrieved by reading a
+impl Tokenizer {
+    /// Create a new `Tokenizer` object from the content retrieved by reading a
     /// file at the given path \
     /// If the file path is invalid or the file is unreadable, the function
     /// will returns an `io::Error` \
@@ -67,14 +67,14 @@ impl Parser {
     pub fn from_source_code(source_code: &str) -> Self {
         Self {
             content: source_code.to_owned(),
-            parsed: vec![],
+            tokenized: vec![],
 
             token: String::new(),
 
             was_double_char: false,
             // The assembly line will be pushed as "this"
             is_asm_code: false,
-            // Comments are ignored in the parsed vector
+            // Comments are ignored in the tokenized vector
             is_comment: false,
 
             // Variables for strings creation
@@ -83,7 +83,7 @@ impl Parser {
         }
     }
 
-    /// Parsed content is not returned in this function, SEE `::parsed()`
+    /// Parsed content is not returned in this function, SEE `::tokenized()`
     pub fn run(&mut self) {
         for (i, c) in self.content.clone().chars().enumerate() {
             // Comments will be everytime skipped
@@ -114,8 +114,8 @@ impl Parser {
     }
 
     /// Return an immutable 2D vector of the tokenized source code
-    pub fn parsed(&self) -> &Vec<Token> {
-        &self.parsed
+    pub fn tokenized(&self) -> &Vec<Token> {
+        &self.tokenized
     }
 
     /// For `Self::from_path()`
@@ -135,7 +135,7 @@ impl Parser {
             // By this way, comments are ignored but `Token::NewLine` is pushed
             // Don't forget it's important to know there is a line here to count
             // lines
-            self.parsed.push(Token::NewLine);
+            self.tokenized.push(Token::NewLine);
 
             // Resets
             self.is_asm_code = false;
@@ -170,7 +170,7 @@ impl Parser {
                 // end of string
                 self.is_string = false;
 
-                self.parsed.push(Token::from_string(&format!(
+                self.tokenized.push(Token::from_string(&format!(
                     "{}{}{}",
                     Token::StringDot.to_string(),
                     self.string_content,
@@ -211,13 +211,13 @@ impl Parser {
                         self.is_comment = true;
                         return true;
                     }
-                    self.parsed.push(double_char_as_token);
+                    self.tokenized.push(double_char_as_token);
 
                     self.was_double_char = true;
                     return true;
                 }
 
-                self.parsed.push(Token::from_string(&format!("{}", c)));
+                self.tokenized.push(Token::from_string(&format!("{}", c)));
             }
             self.was_double_char = false;
             return true;
@@ -233,7 +233,7 @@ impl Parser {
             return;
         }
 
-        self.parsed.push(Token::from_string(&self.token.clone()));
+        self.tokenized.push(Token::from_string(&self.token.clone()));
         self.token = String::new(); // reset for the next
     }
 }
@@ -241,18 +241,18 @@ impl Parser {
 #[test]
 fn from_file() {
     let file_path = Path::new("tests/test1.ju");
-    let mut parser = Parser::from_path(file_path).unwrap();
-    parser.run();
+    let mut Tokenizer = Tokenizer::from_path(file_path).unwrap();
+    tokenizer.run();
 
-    println!("{:?}", parser);
+    println!("{:?}", tokenizer);
 }
 
 #[test]
 fn from_source_code() {
     let source_code = "func main {\n".to_owned() + "    ret ok\n" + "}\n // annoying comment";
 
-    let mut parser = Parser::from_source_code(&source_code);
-    parser.run();
+    let mut tokenizer = Tokenizer::from_source_code(&source_code);
+    tokenizer.run();
 
-    println!("{:?}", parser);
+    println!("{:?}", tokenizer);
 }
