@@ -75,6 +75,8 @@ impl Parser {
         let mut expr_parser = Self::new(expr_tokens.clone());
         expr_parser.run();
 
+        self.n_token += expr_tokens.len() + 1;
+
         Element::Expression(expr_parser.parsed().clone())
     }
 
