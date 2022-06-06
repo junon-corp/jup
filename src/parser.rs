@@ -115,7 +115,11 @@ impl Parser {
         Element::Variable(Variable::new(
             self.retrieve_id(),
             self.retrieve_type_token(),
-            self.retrieve_value_or_expr()
+            if self.tokenized[self.n_token] == Token::Assign {
+                self.retrieve_value_or_expr()
+            } else {
+                Token::None
+            }            
         ))
     }
 
@@ -135,15 +139,16 @@ impl Parser {
     }
 
     fn retrieve_value_or_expr(&mut self) -> Token {
-        if self.tokenized[self.n_token] == Token::Assign {
-            self.n_token += 1;
-            let ret = self.tokenized[self.n_token].clone();
-            if ret != Token::BracketOpen {
-                self.n_token += 1; // skip value
-            }
-            ret
-        } else {
+        self.n_token += 1;
+        let ret = self.tokenized[self.n_token].clone();
+        if ret != Token::BracketOpen {
+            self.n_token += 1; // skip value
+        }
+        
+        if ret == Token::NewLine {
             Token::None
+        } else {
+            ret
         }
     }
 
