@@ -31,10 +31,6 @@ pub enum Token {
     TypeDef,
     Variable,
 
-    // System calls
-    Print,
-    Exit,
-
     /// Example : "foo" or something like that is not a real token
     /// NOTE It can be a string, an value like an integer or a float
     Other(String),
@@ -72,9 +68,6 @@ impl ToString for Token {
             Self::TypeDef => ":",
             Self::Variable => "let",
 
-            Self::Print => "print",
-            Self::Exit => "exit",
-
             Self::Other(ref string) => &*string,
             Self::NewLine => "\n",
             Self::None => "",
@@ -111,9 +104,6 @@ impl Token {
             "'" => Self::StringDot,
             ":" => Self::TypeDef,
             "let" => Self::Variable,
-
-            "print" => Self::Print,
-            "exit" => Self::Exit,
 
             "\n" => Self::NewLine,
             _ => Self::Other(string.to_string()),
