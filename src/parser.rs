@@ -3,7 +3,7 @@
 // Copyright (c) Junon, Antonin Hérault
 
 use crate::lang::tokens::Token;
-use crate::lang::elements::{ Element, function::Function };
+use crate::lang::elements::{ Element, function::Function, variable::Variable };
 
 /// Transforms tokens to a collection of `Element` to be easily used by the 
 /// compiler
@@ -25,8 +25,7 @@ impl<'a> Parser<'a> {
 
     pub fn run(&mut self) {
         for (i, token) in (*self.tokenized).iter().enumerate() {
-            if i < self.n_token {
-                self.n_token -= 1;
+            if i != self.n_token {
                 continue;
             }
 
@@ -37,28 +36,53 @@ impl<'a> Parser<'a> {
     }
 
     fn check(&mut self) -> Element {
-        match &self.tokenized[self.n_token] {
+        self.n_token += 1;
+        match &self.tokenized[self.n_token -1] {
             Token::Function => self.when_function(),
+            Token::Variable => self.when_variable(),
             token => Element::Other(token.clone()),
         }
     }
 
     fn when_function(&mut self) -> Element {
-        let id = self.tokenized[self.n_token + 1].clone();
-        self.n_token += 1;
-        let params = vec![]; // TODO, then update `value`'s definition
+        let id = self.retrieve_id();
         
-        let return_type = {
-            if self.tokenized[self.n_token + 2] == Token::TypeDef {
-                self.n_token += 1;
-                self.tokenized[self.n_token + 3].clone()
-            } else {
-                // A byte is returned (0 or 1, ok or err)
-                Token::Other("byte".to_string())
-            }
-        };
-
+        let params = vec![]; // TODO : Parameters retrieving
+        let return_type = self.retrieve_type_token();
+        
         Element::Function(Function::new(id, params, return_type))
+    }
+
+    fn when_variable(&mut self) -> Element {
+        Element::Variable(Variable::new(
+            self.retrieve_id(),
+            self.retrieve_type_token(),
+            self.retrieve_value_or_expr()
+        ))
+    }
+
+    fn retrieve_id(&mut self) -> Token {
+        self.n_token += 1; // skip id
+        self.tokenized[self.n_token -1].clone()
+    }
+
+    fn retrieve_type_token(&mut self) -> Token {
+        // When the type is explicitly written
+        if self.tokenized[self.n_token] == Token::TypeDef {
+            self.n_token += 2; // skip Token::TypeDef and type
+            self.tokenized[self.n_token -1].clone()
+        } else {
+            Token::None
+        }
+    }
+
+    fn retrieve_value_or_expr(&mut self) -> Token {
+        if self.tokenized[self.n_token] == Token::Assign {
+            self.n_token += 2; // skip Token::Assign and value/Token::BracketOpen
+            self.tokenized[self.n_token -1].clone()
+        } else {
+            Token::None
+        }
     }
 
     pub fn parsed(&self) -> &Vec<Element> {
@@ -68,20 +92,17 @@ impl<'a> Parser<'a> {
 
 #[test]
 pub fn run_parser() {
+    use std::path::Path;
     use crate::tokenizer::Tokenizer;
 
-    let source_code = concat!(
-        "fun main {", "\n",
-        "    let a: int = 5", "\n", 
-        "    let b: bigint", "\n",
-        "}",
-    );
-
-    let mut tokenizer = Tokenizer::from_source_code(&source_code);
+    let mut tokenizer = Tokenizer::from_path(Path::new("tests/parser.ju"))
+        .unwrap();
     tokenizer.run();
+
+    println!("{:?} :\n", tokenizer.tokenized());
 
     let mut parser = Parser::new(tokenizer.tokenized());
     parser.run();
 
-    println!("{:?}", parser.parsed());
+    println!("{:#?}", parser.parsed());
 }
