@@ -22,6 +22,10 @@ impl Variable {
             stack_pos: 0, // changed by the compiler
         }
     }
+
+    pub fn set_stack_pos(&mut self, stack_pos: usize) {
+        self.stack_pos = stack_pos;
+    }
     
     pub fn id(&self) -> String {
         self.id.to_string()
