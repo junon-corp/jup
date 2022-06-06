@@ -16,6 +16,7 @@ use type_::Type;
 /// Language's element that parsed will create from the tokens
 #[derive(Debug, Clone)]
 pub enum Element {
+    Expression(Vec<Element>),
     Function(Function),
     Variable(Variable),
     Params(Params),

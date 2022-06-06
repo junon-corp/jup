@@ -37,11 +37,45 @@ impl<'a> Parser<'a> {
 
     fn check(&mut self) -> Element {
         self.n_token += 1;
+
         match &self.tokenized[self.n_token -1] {
+            Token::BracketOpen => self.when_expression(),
             Token::Function => self.when_function(),
             Token::Variable => self.when_variable(),
             token => Element::Other(token.clone()),
         }
+    }
+
+    fn when_expression(&mut self) -> Element {
+        // Retrieves tokens into the expression
+        let mut expr_tokens = self.tokenized[self.n_token..].to_vec();
+
+        // Skip sub expressions into the expression to avoid finishing the 
+        // expression before it's really finished
+        let mut i_end_expr = 0;
+        let mut is_sub_expression = 0;
+
+        for token in expr_tokens.iter() {
+            match *token {
+                Token::BracketOpen => is_sub_expression += 1,
+                Token::BracketClose => {
+                    if is_sub_expression == 0 {
+                        break;
+                    }
+                    is_sub_expression -= 1;
+                }
+                _ => {}
+            }
+            i_end_expr += 1;
+        }
+
+        expr_tokens = expr_tokens[..i_end_expr].to_vec();
+        
+        // Parse these tokens
+        let mut expr_parser = Self::new(&expr_tokens);
+        expr_parser.run();
+
+        Element::Expression(expr_parser.parsed().clone())
     }
 
     fn when_function(&mut self) -> Element {
@@ -78,8 +112,12 @@ impl<'a> Parser<'a> {
 
     fn retrieve_value_or_expr(&mut self) -> Token {
         if self.tokenized[self.n_token] == Token::Assign {
-            self.n_token += 2; // skip Token::Assign and value/Token::BracketOpen
-            self.tokenized[self.n_token -1].clone()
+            self.n_token += 1;
+            let ret = self.tokenized[self.n_token].clone();
+            if ret != Token::BracketOpen {
+                self.n_token += 1; // skip value
+            }
+            ret
         } else {
             Token::None
         }
