@@ -118,19 +118,10 @@ impl<'a> SyntaxChecker<'a> {
             Token::Variable | Token::Static => {
                 self.break_line = true;
             }
-
-            // System calls
-            Token::Print => {
-                self.break_line = true;
-            }
-            Token::Exit => {
-                self.break_line = true;
-            }
             Token::NewLine => {
                 self.token_i_on_line = 0;
                 self.line_i += 1;
             }
-
             // First token of the parsed content
             Token::None => (),
 

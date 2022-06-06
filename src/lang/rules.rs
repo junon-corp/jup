@@ -201,11 +201,6 @@ impl Rule {
                     ),
                 ]
             }
-
-            // System calls
-            Token::Print => Self::from_basic_scheme(&Token::Print),
-            Token::Exit => Self::from_basic_scheme(&Token::Exit),
-
             _ => vec![],
         }
     }

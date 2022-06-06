@@ -3,7 +3,12 @@
 // Copyright (c) Junon, Antonin Hérault
 
 use crate::lang::tokens::Token;
-use crate::lang::elements::{ Element, function::Function, variable::Variable };
+use crate::lang::elements::{
+    Element, 
+    function::Function, 
+    operation::Operation, 
+    variable::Variable
+};
 
 /// Transforms tokens to a collection of `Element` to be easily used by the 
 /// compiler
@@ -41,6 +46,9 @@ impl Parser {
         match &self.tokenized[self.n_token -1] {
             Token::BracketOpen => self.when_expression(),
             Token::Function => self.when_function(),
+            Token::Plus | Token::Minus | Token::Multiply | Token::Divide 
+                | Token::Assign => self.when_operation(),
+            Token::Return => self.when_return(),
             Token::Variable => self.when_variable(),
             token => Element::Other(token.clone()),
         }
@@ -87,6 +95,20 @@ impl Parser {
         let return_type = self.retrieve_type_token();
         
         Element::Function(Function::new(id, params, return_type))
+    }
+
+    fn when_operation(&mut self) -> Element {        
+        let operation = Element::Operation(Operation::new(
+            self.tokenized[self.n_token - 1].clone(),
+            self.tokenized[self.n_token - 2].clone(),
+            self.tokenized[self.n_token].clone(),
+        ));
+        self.n_token += 1;
+        operation
+    }
+
+    fn when_return(&mut self) -> Element {
+        Element::Return(self.retrieve_value_or_expr())
     }
 
     fn when_variable(&mut self) -> Element {
