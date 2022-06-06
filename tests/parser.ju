@@ -1,0 +1,9 @@
+fun main {
+    let a: int = 4
+    let b: bigint
+    let c: int = { 2 + 3 }
+}
+
+fun foo: int {
+    ret 2
+}
