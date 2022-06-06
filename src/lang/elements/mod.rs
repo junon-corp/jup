@@ -19,7 +19,5 @@ pub enum Element {
     Expression(Vec<Element>),
     Function(Function),
     Variable(Variable),
-    Params(Params),
-    Type(Type),
     Other(Token),
 }
