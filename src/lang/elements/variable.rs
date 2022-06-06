@@ -10,6 +10,7 @@ pub struct Variable {
     id: Token,
     type_: Token,
     value: Token,
+    stack_pos: usize,
 }
 
 impl Variable {
@@ -17,7 +18,8 @@ impl Variable {
         Self {
             id,
             type_,
-            value
+            value,
+            stack_pos: 0, // changed by the compiler
         }
     }
     
@@ -38,5 +40,9 @@ impl Variable {
             Token::None => "0".to_string(),
             tok_value => tok_value.to_string(),
         }
+    }
+
+    pub fn stack_pos(&self) -> usize {
+        self.stack_pos
     }
 }
