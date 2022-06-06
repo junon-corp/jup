@@ -1,0 +1,9 @@
+fun main {
+    let x: int = 5 // first way
+    let y: int = { // second way
+        print 'I love Junon !\n'
+        let x: int = 3 // another scope, this `x` is different than the first one
+        { 5 + x }
+    }
+    let z: int = { 2 + 2 }
+}
