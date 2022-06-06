@@ -46,10 +46,10 @@ impl Parser {
         match &self.tokenized[self.n_token -1] {
             Token::BracketOpen => self.when_expression(),
             Token::Function => self.when_function(),
+            Token::Variable => self.when_variable(),
+            Token::Return => self.when_return(),
             Token::Plus | Token::Minus | Token::Multiply | Token::Divide 
                 | Token::Assign => self.when_operation(),
-            Token::Return => self.when_return(),
-            Token::Variable => self.when_variable(),
             token => Element::Other(token.clone()),
         }
     }
@@ -97,7 +97,9 @@ impl Parser {
         Element::Function(Function::new(id, params, return_type))
     }
 
-    fn when_operation(&mut self) -> Element {        
+    fn when_operation(&mut self) -> Element {   
+        self.parsed.pop();
+
         let operation = Element::Operation(Operation::new(
             self.tokenized[self.n_token - 1].clone(),
             self.tokenized[self.n_token - 2].clone(),
@@ -116,6 +118,7 @@ impl Parser {
             self.retrieve_id(),
             self.retrieve_type_token(),
             if self.tokenized[self.n_token] == Token::Assign {
+                self.n_token += 1;
                 self.retrieve_value_or_expr()
             } else {
                 Token::None
@@ -138,17 +141,20 @@ impl Parser {
         }
     }
 
+    /// - When `Token::BracketOpen` is returned, we know it's an expression
+    /// - When `Token::Other(...)` is returned, we know it's a value
+    /// - When `Token::None` is returned it's because there is no value or expr
     fn retrieve_value_or_expr(&mut self) -> Token {
-        self.n_token += 1;
-        let ret = self.tokenized[self.n_token].clone();
-        if ret != Token::BracketOpen {
-            self.n_token += 1; // skip value
-        }
-        
-        if ret == Token::NewLine {
-            Token::None
-        } else {
-            ret
+        let next = self.tokenized[self.n_token].clone();
+        match next {
+            Token::BracketOpen => {
+                next
+            },
+            Token::Other(_) => {
+                self.n_token += 1;
+                next
+            }
+            _ => Token::None,
         }
     }
 
