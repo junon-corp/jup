@@ -15,6 +15,9 @@ pub enum Type {
 
     StaticArray(Box<Self>),     // sizeof(Type)
     Array(Box<Self>, usize),    // sizeof(Type) * len
+
+    /// Like a "void" type, avoid using `Option<Type>`
+    None,
 }
 
 impl Type {
@@ -23,6 +26,7 @@ impl Type {
             "byte" => Type::Byte,
             "int" => Type::Integer,
             "bigint" => Type::BigInteger,
+            "" => Type::None,
             _ => panic!(),
         }
     }
@@ -48,7 +52,8 @@ impl Type {
             Self::Integer => ddirective!(Dd),
             Self::BigInteger => ddirective!(Dq),
             Self::Array(ref type_, _) 
-                | Self::StaticArray(ref type_) => (*type_).to_asm_operand()
+                | Self::StaticArray(ref type_) => (*type_).to_asm_operand(),
+            _ => panic!(),
         }
     }
 
@@ -59,6 +64,7 @@ impl Type {
             Self::BigInteger => 8,
             Self::Array(ref type_, len) => (*type_).to_usize() * len,
             Self::StaticArray(ref type_) => (*type_).to_usize(),
+            _ => panic!()
         }
     }
 }
