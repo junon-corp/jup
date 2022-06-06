@@ -7,15 +7,15 @@ use crate::lang::elements::{ Element, function::Function, variable::Variable };
 
 /// Transforms tokens to a collection of `Element` to be easily used by the 
 /// compiler
-pub struct Parser<'a> {
-    tokenized: &'a Vec<Token>,
+pub struct Parser {
+    tokenized: Vec<Token>,
     parsed: Vec<Element>,
     n_token: usize,
 }
 
-impl<'a> Parser<'a> {
+impl Parser {
     /// Takes a tokenized file thanks to `Tokenizer` to parse these tokens
-    pub fn new(tokenized: &'a Vec<Token>) -> Self {
+    pub fn new(tokenized: Vec<Token>) -> Self {
         Parser {
             tokenized,
             parsed: vec![],
@@ -24,7 +24,7 @@ impl<'a> Parser<'a> {
     }
 
     pub fn run(&mut self) {
-        for (i, token) in (*self.tokenized).iter().enumerate() {
+        for (i, token) in self.tokenized.clone().iter().enumerate() {
             if i != self.n_token {
                 continue;
             }
@@ -72,7 +72,7 @@ impl<'a> Parser<'a> {
         expr_tokens = expr_tokens[..i_end_expr].to_vec();
         
         // Parse these tokens
-        let mut expr_parser = Self::new(&expr_tokens);
+        let mut expr_parser = Self::new(expr_tokens.clone());
         expr_parser.run();
 
         Element::Expression(expr_parser.parsed().clone())
@@ -139,7 +139,7 @@ pub fn run_parser() {
 
     println!("{:?} :\n", tokenizer.tokenized());
 
-    let mut parser = Parser::new(tokenizer.tokenized());
+    let mut parser = Parser::new(tokenizer.tokenized().clone());
     parser.run();
 
     println!("{:#?}", parser.parsed());
