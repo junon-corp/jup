@@ -16,6 +16,7 @@ pub struct Parser {
     tokenized: Vec<Token>,
     parsed: Vec<Element>,
     n_token: usize,
+    asked_for_push: Option<Element>,
 }
 
 impl Parser {
@@ -25,6 +26,7 @@ impl Parser {
             tokenized,
             parsed: vec![],
             n_token: 0,
+            asked_for_push: None,
         }
     }
 
@@ -35,12 +37,15 @@ impl Parser {
             }
 
             self.n_token = i;
-            let element = self.check();
-            self.parsed.push(element);
+            let elements = self.check();
+            
+            for element in elements {
+                self.parsed.push(element);
+            }
         }
     }
 
-    fn check(&mut self) -> Element {
+    fn check(&mut self) -> Vec<Element> {
         self.n_token += 1;
 
         match &self.tokenized[self.n_token -1] {
@@ -50,11 +55,11 @@ impl Parser {
             Token::Return => self.when_return(),
             Token::Plus | Token::Minus | Token::Multiply | Token::Divide 
                 | Token::Assign => self.when_operation(),
-            token => Element::Other(token.clone()),
+            token => vec![Element::Other(token.clone())],
         }
     }
 
-    fn when_expression(&mut self) -> Element {
+    fn when_expression(&mut self) -> Vec<Element> {
         // Retrieves tokens into the expression
         let mut expr_tokens = self.tokenized[self.n_token..].to_vec();
 
@@ -85,45 +90,63 @@ impl Parser {
 
         self.n_token += expr_tokens.len() + 1;
 
-        Element::Expression(expr_parser.parsed().clone())
+        vec![Element::Expression(expr_parser.parsed().clone())]
     }
 
-    fn when_function(&mut self) -> Element {
+    fn when_function(&mut self) -> Vec<Element> {
         let id = self.retrieve_id();
         
         let params = vec![]; // TODO : Parameters retrieving
         let return_type = self.retrieve_type_token();
         
-        Element::Function(Function::new(id, params, return_type))
+        vec![Element::Function(Function::new(id, params, return_type))]
     }
 
-    fn when_operation(&mut self) -> Element {   
-        self.parsed.pop();
+    fn when_operation(&mut self) -> Vec<Element> {   
+        self.parsed.pop(); // arg1 has to be only integrated in the operation 
+
+        let mut ret_elements: Vec<Element> = vec![];
 
         let operation = Element::Operation(Operation::new(
+            // Operator
             self.tokenized[self.n_token - 1].clone(),
-            self.tokenized[self.n_token - 2].clone(),
-            self.tokenized[self.n_token].clone(),
+            // Argument 1
+            self.tokenized[self.n_token - 2].clone(),        
+            // Argument 2
+            {
+                let arg2 = self.tokenized[self.n_token].clone();
+                if arg2 == Token::BracketOpen {
+                    self.n_token += 1;
+                    ret_elements.extend(self.when_expression());
+                }
+                arg2
+            }
         ));
+
         self.n_token += 1;
-        operation
+        ret_elements.insert(0, operation);
+        ret_elements
     }
 
-    fn when_return(&mut self) -> Element {
-        Element::Return(self.retrieve_value_or_expr())
+    fn when_return(&mut self) -> Vec<Element> {
+        vec![
+            Element::Return(self.retrieve_value_or_expr())
+        ]
     }
 
-    fn when_variable(&mut self) -> Element {
-        Element::Variable(Variable::new(
-            self.retrieve_id(),
-            self.retrieve_type_token(),
-            if self.tokenized[self.n_token] == Token::Assign {
-                self.n_token += 1;
-                self.retrieve_value_or_expr()
-            } else {
-                Token::None
-            }            
-        ))
+    fn when_variable(&mut self) -> Vec<Element> {
+        vec![
+            Element::Variable(Variable::new(
+                self.retrieve_id(),
+                self.retrieve_type_token(),
+                if self.tokenized[self.n_token] == Token::Assign {
+                    self.n_token += 1;
+                    self.retrieve_value_or_expr()
+                } else {
+                    Token::None
+                }            
+            ))
+        ]
     }
 
     fn retrieve_id(&mut self) -> Token {
