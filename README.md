@@ -17,6 +17,35 @@ add the following content :
 jup = { git = "https://github.com/junon-corp/jup" }
 ```
 
+- ## Tokenizer
+    To "translate" source code to series of tokens (All tokens are defined [here](src/lang/tokens.rs)) :
+
+    From a file path :
+    ```rust
+    let example = Path::new("example.ju");
+    let mut tokenizer = Tokenizer::from_path(example).unwrap();
+    tokenizer.run();
+
+    let tokens: Vec<Token> = tokenizer.tokenized();
+    ```
+    From direct source code :
+    ```rust
+    let file_content = "...";
+    let mut tokenizer = Tokenizer::from_source_code(&file_content);
+    tokenizer.run();
+
+    let tokens: Vec<Token> = tokenizer.tokenized();
+    ```
+- ## Parser
+    From the tokenized source code, we can transform these tokens to elements (All elements are defined [here](src/lang/elements/mod.rs)) :
+    ```rust
+    let mut parser = Parser::new(tokens.clone());
+    parser.run();
+
+    let elements = parser.parsed();
+    ```
+    **tokens** is defined in the above example.
+
 ## Tokens
 Not all tokens are implemented, you can add your own tokens following the Junon
 language and make a pull request to add them. Tokens will be added in the same
