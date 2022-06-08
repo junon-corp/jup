@@ -23,6 +23,10 @@ impl Variable {
         }
     }
 
+    pub fn set_value(&mut self, value: String) {
+        self.value = Token::from_string(value.as_str());
+    }
+
     pub fn set_stack_pos(&mut self, stack_pos: usize) {
         self.stack_pos = stack_pos;
     }
