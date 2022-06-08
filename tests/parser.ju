@@ -1,15 +1,11 @@
 fun main {
     let a: int = 4
+
     let b: bigint
+    
+    b = { 9 + 8 }
+
     let c: int = { 2 + 3 }
 
     ret
-}
-
-fun foo: int {
-    ret 2
-}
-
-fun foo2: bigint {
-    ret { 3 + 5 }
 }
