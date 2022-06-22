@@ -6,6 +6,11 @@ fun main {
     b = { 9 + 8 }
 
     let c: int = { 2 + 3 }
+    let d: int[2]
 
+    ret
+}
+
+fun foo: bigint[5] {
     ret
 }
