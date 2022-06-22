@@ -5,7 +5,7 @@
 use std::string::ToString;
 
 /// All tokens list for the Junon programming
-#[allow(unused)] // yes, you will probably not use all of them
+#[allow(unused)] // for debug
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Token {
     Assembly,
@@ -32,12 +32,11 @@ pub enum Token {
     Variable,
 
     /// Example : "foo" or something like that is not a real token
-    /// NOTE It can be a string, an value like an integer or a float
+    /// Note : It can be a string, an value like an integer or a float
     Other(String),
-    // Avoid using a 2D table and permit to do not respect line breaks
+    // Avoid using a 2D table and permits to do not respect line breaks
     NewLine,
-    /// Avoid `Option` usage \
-    /// WARNING : It's not a a "real" token from the language
+    /// Avoid `Option` usage
     None,
 }
 

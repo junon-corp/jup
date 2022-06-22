@@ -44,7 +44,7 @@ impl Variable {
     /// any expression is given as "value"
     pub fn value(&self) -> String {
         match &self.value {
-            Token::BracketOpen => "rbx".to_string(), // TODO : Create a defaults repo
+            Token::BracketOpen => "rbx".to_string(), // Todo : Create a defaults repo
             Token::None => "0".to_string(),
             tok_value => tok_value.to_string(),
         }

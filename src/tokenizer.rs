@@ -53,17 +53,20 @@ impl fmt::Debug for Tokenizer {
 }
 
 impl Tokenizer {
-    /// Create a new `Tokenizer` object from the content retrieved by reading a
-    /// file at the given path \
+    /// Creates a new `Tokenizer` object from the content retrieved by reading a
+    /// file at the given path
+    ///
     /// If the file path is invalid or the file is unreadable, the function
-    /// will returns an `io::Error` \
-    /// NOTE The path is not checked, it should be valid before giving it as
+    /// will returns an `io::Error`
+    ///
+    /// Note : The path is not checked, it should be valid before giving it as
     /// parameter to this associated function
     pub fn from_path(file_path: &Path) -> Result<Self, io::Error> {
         let source_code = Self::read_file_content(file_path)?;
         Ok(Self::from_source_code(&source_code))
     }
 
+    /// Creates a new `Tokenizer` object from the given source code content
     pub fn from_source_code(source_code: &str) -> Self {
         Self {
             content: source_code.to_owned(),
@@ -118,7 +121,7 @@ impl Tokenizer {
         }
     }
 
-    /// Return an immutable 2D vector of the tokenized source code
+    /// Returns an immutable 2D vector of the tokenized source code
     pub fn tokenized(&self) -> &Vec<Token> {
         &self.tokenized
     }

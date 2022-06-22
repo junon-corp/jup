@@ -96,7 +96,7 @@ impl Parser {
     fn when_function(&mut self) -> Vec<Element> {
         let id = self.retrieve_id();
         
-        let params = vec![]; // TODO : Parameters retrieving
+        let params = vec![]; // Todo : Parameters retrieving
         let return_type = self.retrieve_type_token();
         
         vec![Element::Function(Function::new(id, params, return_type))]
