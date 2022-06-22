@@ -83,8 +83,13 @@ impl Tokenizer {
         }
     }
 
-    /// Parsed content is not returned in this function, SEE `::tokenized()`
+    /// Parsed content is not returned by this function but by `tokenized()`
     pub fn run(&mut self) {
+        // Replaces all the tabulations to space character, to simplify the
+        // operations and avoid creating matches for tabulations when spaces 
+        // matches already exist
+        self.content = self.content.replace("\t", " ");
+
         for (i, c) in self.content.clone().chars().enumerate() {
             // Comments will be everytime skipped
             if c != '\n' && self.is_comment {
@@ -249,7 +254,11 @@ fn from_file() {
 
 #[test]
 fn from_source_code() {
-    let source_code = "func main {\n".to_owned() + "    ret ok\n" + "}\n // annoying comment";
+    let source_code = 
+        "func main {\n".to_owned() + 
+        "\tlet a = 5;" +
+        "    ret\n" + 
+        "}\n // annoying comment";
 
     let mut tokenizer = Tokenizer::from_source_code(&source_code);
     tokenizer.run();
