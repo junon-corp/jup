@@ -6,7 +6,8 @@ use crate::lang::tokens::Token;
 use crate::lang::elements::{
     Element, 
     function::Function, 
-    operation::Operation, 
+    operation::Operation,
+    type_::Type,
     variable::Variable
 };
 
@@ -154,13 +155,30 @@ impl Parser {
         self.tokenized[self.n_token -1].clone()
     }
 
-    fn retrieve_type_token(&mut self) -> Token {
+    fn retrieve_type_token(&mut self) -> Type {
         // When the type is explicitly written
         if self.tokenized[self.n_token] == Token::TypeDef {
             self.n_token += 2; // skip Token::TypeDef and type
-            self.tokenized[self.n_token -1].clone()
+            
+            let type_token = self.tokenized[self.n_token -1].clone();
+            
+            // Array type found
+            if self.tokenized[self.n_token] == Token::SquareBracketOpen {
+                // Token::SquareBracketOpen, ::Other and ::SquareBracketClose
+                self.n_token += 3;
+
+                let array_size = self.tokenized[self.n_token -2]
+                    .clone()
+                    .to_string()
+                    .parse::<usize>()
+                    .unwrap();
+                
+                Type::array_from_string(type_token.to_string(), array_size)
+            } else {
+                Type::from_string(type_token.to_string())
+            }
         } else {
-            Token::None
+            Type::None
         }
     }
 

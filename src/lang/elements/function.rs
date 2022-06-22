@@ -10,11 +10,11 @@ use super::type_::Type;
 pub struct Function {
     id: Token,
     params: Params,
-    return_type: Token,
+    return_type: Type,
 }
 
 impl Function {
-    pub fn new(id: Token, params: Params, return_type: Token) -> Self {
+    pub fn new(id: Token, params: Params, return_type: Type) -> Self {
         Function {
             id,
             params,
@@ -30,7 +30,7 @@ impl Function {
         self.params.clone()
     }
 
-    pub fn return_type(&self) -> Type {
-        Type::from_string(self.return_type.to_string())
+    pub fn return_type(&self) -> &Type {
+        &self.return_type
     }
 }

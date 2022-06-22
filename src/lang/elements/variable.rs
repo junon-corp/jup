@@ -8,13 +8,13 @@ use super::type_::Type;
 #[derive(Debug, Clone)]
 pub struct Variable {
     id: Token,
-    type_: Token,
+    type_: Type,
     value: Token,
     stack_pos: usize,
 }
 
 impl Variable {
-    pub fn new(id: Token, type_: Token, value: Token) -> Self {
+    pub fn new(id: Token, type_: Type, value: Token) -> Self {
         Self {
             id,
             type_,
@@ -35,8 +35,8 @@ impl Variable {
         self.id.to_string()
     }
 
-    pub fn type_(&self) -> Type {
-        Type::from_string(self.type_.to_string())
+    pub fn type_(&self) -> &Type {
+        &self.type_
     }
 
     /// When the variable is not initialized, it's initialized as `0`
