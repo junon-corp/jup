@@ -39,15 +39,8 @@ impl Variable {
         &self.type_
     }
 
-    /// When the variable is not initialized, it's initialized as `0`
-    /// If the value is in fact an expression, the default return register for
-    /// any expression is given as "value"
-    pub fn value(&self) -> String {
-        match &self.value {
-            Token::BracketOpen => "rbx".to_string(), // Todo : Create a defaults repo
-            Token::None => "0".to_string(),
-            tok_value => tok_value.to_string(),
-        }
+    pub fn value(&self) -> &Token {
+        &self.value
     }
 
     pub fn stack_pos(&self) -> usize {
