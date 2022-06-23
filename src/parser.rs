@@ -50,6 +50,7 @@ impl Parser {
         self.n_token += 1;
 
         match &self.tokenized[self.n_token -1] {
+            Token::SquareBracketOpen => self.when_array(),
             Token::BracketOpen => self.when_expression(),
             Token::Function => self.when_function(),
             Token::Variable => self.when_variable(),
@@ -60,43 +61,72 @@ impl Parser {
         }
     }
 
-    fn when_expression(&mut self) -> Vec<Element> {
-        // Retrieves tokens into the expression
-        let mut expr_tokens = self.tokenized[self.n_token..].to_vec();
+    /// Retrieves all tokens into `start_token` and `end_token` and skips sub 
+    /// parts
+    fn retrieve_token_into(&mut self, start_token: Token, end_token: Token) -> Vec<Token> {
+        // Retrieves tokens into
+        let mut tokens_into = self.tokenized[self.n_token..].to_vec();
 
-        // Skip sub expressions into the expression to avoid finishing the 
-        // expression before it's really finished
-        let mut i_end_expr = 0;
-        let mut is_sub_expression = 0;
+        // Skips sub parts into to avoid finishing before it's really finished
+        let mut i_end = 0;
+        let mut is_sub_part = 0;
 
-        for token in expr_tokens.iter() {
-            match *token {
-                Token::BracketOpen => is_sub_expression += 1,
-                Token::BracketClose => {
-                    if is_sub_expression == 0 {
-                        break;
-                    }
-                    is_sub_expression -= 1;
+        for token in tokens_into.iter() {
+            if token == &start_token {
+                is_sub_part += 1;
+            } else if token == &end_token {
+                if is_sub_part == 0 {
+                    break;
                 }
-                _ => {}
+                is_sub_part -= 1;
             }
-            i_end_expr += 1;
+
+            i_end += 1;
         }
 
-        expr_tokens = expr_tokens[..i_end_expr].to_vec();
+        tokens_into[..i_end].to_vec()
+    }
+
+    /// Creates one `Element::Array` object with all the array's values tokens
+    fn when_array(&mut self) -> Vec<Element> {
+        let array_tokens = self.retrieve_token_into(
+            Token::SquareBracketOpen, Token::SquareBracketClose
+        );
+
+        self.n_token += array_tokens.len() + 1;
+
+        // Creates the array's values object
+        let mut values: Vec<Token> = vec![];
+        
+        for token in array_tokens {
+            if token == Token::Comma {
+                continue;
+            }
+            values.push(token.clone());
+        }
+        
+        vec![Element::Array(values)]
+    }
+
+    /// Creates one `Element::Expression` object with a parsed the parsed 
+    /// elements retrieved into the expression
+    fn when_expression(&mut self) -> Vec<Element> {
+        let expr_tokens = self.retrieve_token_into(
+            Token::BracketOpen, Token::BracketClose
+        );
         
         // Parse these tokens
         let mut expr_parser = Self::new(expr_tokens.clone());
         expr_parser.run();
-
+        
         self.n_token += expr_tokens.len() + 1;
 
         vec![Element::Expression(expr_parser.parsed().clone())]
     }
 
+    /// Creates one `Element::Function` object
     fn when_function(&mut self) -> Vec<Element> {
         let id = self.retrieve_id();
-        
         let params = vec![]; // Todo : Parameters retrieving
         let return_type = self.retrieve_type_token();
         
@@ -116,9 +146,16 @@ impl Parser {
             // Argument 2
             {
                 let arg2 = self.tokenized[self.n_token].clone();
-                if arg2 == Token::BracketOpen {
-                    self.n_token += 1;
-                    ret_elements.extend(self.when_expression());
+                match arg2 {
+                    Token::BracketOpen => {
+                        self.n_token += 1;
+                        ret_elements.extend(self.when_expression());
+                    }
+                    Token::SquareBracketOpen => {
+                        self.n_token += 1;
+                        ret_elements.extend(self.when_array());
+                    }
+                    _ => {}
                 }
                 arg2
             }
@@ -187,10 +224,9 @@ impl Parser {
     /// - When `Token::None` is returned it's because there is no value or expr
     fn retrieve_value_or_expr(&mut self) -> Token {
         let next = self.tokenized[self.n_token].clone();
+
         match next {
-            Token::BracketOpen => {
-                next
-            },
+            Token::BracketOpen | Token::SquareBracketOpen => next,
             Token::Other(_) => {
                 self.n_token += 1;
                 next
