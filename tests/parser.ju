@@ -1,12 +1,14 @@
 fun main {
-    let a: int = 4
+    let a: int = 1
 
     let b: bigint
-    
-    b = { 9 + 8 }
+    b = { 2 + 3 }
 
-    let c: int = { 2 + 3 }
-    let d: int[2]
+    let c: int = { 4 - 5 }
+    c = { 6 * 7 }
+
+    let d: int[2] = [8, 9]
+    d = [10, 11]
 
     ret
 }
