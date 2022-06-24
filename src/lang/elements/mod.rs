@@ -20,6 +20,7 @@ use variable::Variable;
 #[derive(Debug, Clone)]
 pub enum Element {
     Array(Vec<Token>),
+    Assembly(Token),
     Expression(Vec<Element>),
     Operation(Operation),
     Function(Function),

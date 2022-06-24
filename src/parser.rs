@@ -51,6 +51,7 @@ impl Parser {
 
         match &self.tokenized[self.n_token -1] {
             Token::SquareBracketOpen => self.when_array(),
+            Token::Assembly => self.when_assembly(),
             Token::BracketOpen => self.when_expression(),
             Token::Function => self.when_function(),
             Token::Variable => self.when_variable(),
@@ -106,6 +107,12 @@ impl Parser {
         }
         
         vec![Element::Array(values)]
+    }
+
+    fn when_assembly(&mut self) -> Vec<Element> {
+        let code: Token = self.tokenized[self.n_token].clone();
+        self.n_token += 1;
+        vec![Element::Assembly(code)]
     }
 
     /// Creates one `Element::Expression` object with a parsed the parsed 
