@@ -9,6 +9,8 @@ fun main {
 
     let d: int[2] = [8, 9]
     d = [10, 11]
+    
+    @ call foo
 
     ret
 }
