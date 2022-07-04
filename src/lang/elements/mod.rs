@@ -21,10 +21,10 @@ use variable::Variable;
 pub enum Element {
     Array(Vec<Token>),
     Assembly(Token),
-    Call(Function, Params),
     Expression(Vec<Element>),
     Operation(Operation),
     Function(Function),
+    Parameters(Params),
     Return(Token),
     Variable(Variable),
     Other(Token),

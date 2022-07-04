@@ -54,6 +54,7 @@ impl Parser {
             Token::Assembly => self.when_assembly(),
             Token::BracketOpen => self.when_expression(),
             Token::Function => self.when_function(),
+            Token::ParenOpen => self.when_parameters(),
             Token::Variable => self.when_variable(),
             Token::Return => self.when_return(),
             Token::Plus | Token::Minus | Token::Multiply | Token::Divide 
@@ -176,6 +177,18 @@ impl Parser {
     fn when_return(&mut self) -> Vec<Element> {
         vec![
             Element::Return(self.retrieve_value_or_expr())
+        ]
+    }
+
+    fn when_parameters(&mut self) -> Vec<Element> {
+        let params = self.retrieve_token_into(
+            Token::ParenOpen, 
+            Token::ParenClose
+        );
+        self.n_token += 1;
+        
+        vec![
+            Element::Parameters(params)
         ]
     }
 
