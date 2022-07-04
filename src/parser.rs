@@ -4,6 +4,7 @@
 
 use crate::lang::tokens::Token;
 use crate::lang::elements::{
+    Params,
     Element, 
     function::Function, 
     operation::Operation,
@@ -135,7 +136,18 @@ impl Parser {
     /// Creates one `Element::Function` object
     fn when_function(&mut self) -> Vec<Element> {
         let id = self.retrieve_id();
-        let params = vec![]; // Todo : Parameters retrieving
+        
+        // Retrieves parameters when exist
+        let params: Params = if self.tokenized[self.n_token] == Token::ParenOpen {
+            self.n_token += 1;
+            match &self.when_parameters()[0] {
+                Element::Parameters(params) => params.clone(),
+                _ => panic!(),
+            }
+        } else {
+            vec![]
+        };
+
         let return_type = self.retrieve_type_token();
         
         vec![Element::Function(Function::new(id, params, return_type))]
@@ -180,13 +192,13 @@ impl Parser {
         ]
     }
 
+    /// Always return a vector of exactly one element
     fn when_parameters(&mut self) -> Vec<Element> {
         let params = self.retrieve_token_into(
-            Token::ParenOpen, 
-            Token::ParenClose
+            Token::ParenOpen, Token::ParenClose
         );
         self.n_token += params.len() + 1;
-        
+
         vec![
             Element::Parameters(params)
         ]
@@ -239,9 +251,9 @@ impl Parser {
         }
     }
 
-    /// - When `Token::BracketOpen` is returned, we know it's an expression
-    /// - When `Token::Other(...)` is returned, we know it's a value
-    /// - When `Token::None` is returned it's because there is no value or expr
+    /// `Token::BracketOpen` is returned when it's an expression, 
+    /// `Token::Other(...)` is returned when it's a value. But when 
+    /// `Token::None` is returned it's because there is no value or expr
     fn retrieve_value_or_expr(&mut self) -> Token {
         let next = self.tokenized[self.n_token].clone();
 
