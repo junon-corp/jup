@@ -185,7 +185,7 @@ impl Parser {
             Token::ParenOpen, 
             Token::ParenClose
         );
-        self.n_token += 1;
+        self.n_token += params.len() + 1;
         
         vec![
             Element::Parameters(params)
