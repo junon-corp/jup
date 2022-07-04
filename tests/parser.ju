@@ -10,11 +10,15 @@ fun main {
     let d: int[2] = [8, 9]
     d = [10, 11]
     
-    @ call foo
+    foo(5, 'a')
 
     ret
 }
 
-fun foo: bigint[5] {
-    ret
+fun foo(a: int, b: byte): bigint[5] {
+    ret [1, 2, 3, 4, 5]
+}
+
+fun foo2(): int {
+    ret 5
 }
