@@ -23,6 +23,14 @@ impl Variable {
         }
     }
 
+    pub fn set_id(&mut self, id: Token) {
+        self.id = id;
+    }
+
+    pub fn set_type(&mut self, type_: Type) {
+        self.type_ = type_;
+    }
+
     pub fn set_value(&mut self, value: String) {
         self.value = Token::from_string(value.as_str());
     }
