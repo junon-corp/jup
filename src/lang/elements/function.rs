@@ -3,7 +3,7 @@
 // Copyright (c) Junon, Antonin Hérault
 
 use crate::lang::tokens::Token;
-use super::params::Params;
+use super::Params;
 use super::type_::Type;
 
 #[derive(Debug, Clone)]
