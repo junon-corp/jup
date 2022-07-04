@@ -4,15 +4,15 @@
 
 pub mod function;
 pub mod operation;
-pub mod params;
 pub mod type_;
 pub mod variable;
 
 use crate::lang::tokens::Token;
 
+pub type Params = Vec<Token>;
+
 use function::Function;
 use operation::Operation;
-use params::Params;
 use type_::Type;
 use variable::Variable;
 
@@ -21,6 +21,7 @@ use variable::Variable;
 pub enum Element {
     Array(Vec<Token>),
     Assembly(Token),
+    Call(Function, Params),
     Expression(Vec<Element>),
     Operation(Operation),
     Function(Function),
