@@ -10,7 +10,7 @@ fun main {
     let d: int[2] = [8, 9]
     d = [10, 11]
     
-    foo(5, 'a')
+    foo({ 5 + 2 }, 'a')
 
     ret
 }
