@@ -3,21 +3,24 @@
 // Copyright (c) Junon, Antonin Hérault
 
 use crate::lang::tokens::Token;
-use super::Params;
-use super::type_::Type;
+use super::{
+    Element,
+    type_::Type
+};
 
 #[derive(Debug, Clone)]
 pub struct Function {
     id: Token,
-    params: Params,
+    /// This element has to be `Element::Parameters`
+    params: Box<Element>,
     return_type: Type,
 }
 
 impl Function {
-    pub fn new(id: Token, params: Params, return_type: Type) -> Self {
+    pub fn new(id: Token, params: Element, return_type: Type) -> Self {
         Function {
             id,
-            params,
+            params: Box::new(params),
             return_type,
         }
     }
@@ -26,8 +29,8 @@ impl Function {
         self.id.to_string()
     }
 
-    pub fn params(&self) -> Params {
-        self.params.clone()
+    pub fn params(&self) -> Element {
+        *self.params.clone()
     }
 
     pub fn return_type(&self) -> &Type {

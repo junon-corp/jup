@@ -4,7 +4,6 @@
 
 use crate::lang::tokens::Token;
 use crate::lang::elements::{
-    Params,
     Element, 
     function::Function, 
     operation::Operation,
@@ -138,14 +137,11 @@ impl Parser {
         let id = self.retrieve_id();
         
         // Retrieves parameters when exist
-        let params: Params = if self.tokenized[self.n_token] == Token::ParenOpen {
+        let params = if self.tokenized[self.n_token] == Token::ParenOpen {
             self.n_token += 1;
-            match &self.when_parameters()[0] {
-                Element::Parameters(params) => params.clone(),
-                _ => panic!(),
-            }
+            self.when_parameters()[0].clone()
         } else {
-            vec![]
+            Element::Parameters(vec![])
         };
 
         let return_type = self.retrieve_type_token();
@@ -194,13 +190,19 @@ impl Parser {
 
     /// Always return a vector of exactly one element
     fn when_parameters(&mut self) -> Vec<Element> {
-        let params = self.retrieve_token_into(
+        let params_tokens = self.retrieve_token_into(
             Token::ParenOpen, Token::ParenClose
         );
-        self.n_token += params.len() + 1;
+        self.n_token += params_tokens.len() + 1;
+
+        let parsed_params: Vec<Element> = {
+            let mut parser = Parser::new(params_tokens);
+            parser.run();
+            parser.parsed().to_vec()
+        };
 
         vec![
-            Element::Parameters(params)
+            Element::Parameters(parsed_params)
         ]
     }
 

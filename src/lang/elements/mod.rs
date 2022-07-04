@@ -9,8 +9,6 @@ pub mod variable;
 
 use crate::lang::tokens::Token;
 
-pub type Params = Vec<Token>;
-
 use function::Function;
 use operation::Operation;
 use type_::Type;
@@ -24,7 +22,7 @@ pub enum Element {
     Expression(Vec<Element>),
     Operation(Operation),
     Function(Function),
-    Parameters(Params),
+    Parameters(Vec<Element>),
     Return(Token),
     Variable(Variable),
     Other(Token),
