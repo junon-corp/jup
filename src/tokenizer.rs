@@ -207,7 +207,7 @@ impl Tokenizer {
     }
 
     fn about_others(&mut self, c: char, i: usize) -> bool {
-        if !c.is_alphanumeric() {
+        if !c.is_alphanumeric() && c != '_' {
             // should be cut
             self.push_token(); // finish the current token...
 
