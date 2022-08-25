@@ -14,8 +14,6 @@ fun main {
 
     if { b == a } {
         c = 10
-    } elif { b == b } {
-        c = 15
     } else {
         c = 20
     }
