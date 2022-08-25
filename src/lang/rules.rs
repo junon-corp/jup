@@ -106,15 +106,6 @@ impl Rule {
                     ),
                 ]
             }
-            Token::ConditionElif => {
-                vec![
-                    rule!(
-                        RuleItem::Main(Token::ConditionElif),
-                        RuleItem::Expression,
-                        RuleItem::Expression
-                    )
-                ]
-            }
             Token::ConditionElse => {
                 vec![
                     rule!(

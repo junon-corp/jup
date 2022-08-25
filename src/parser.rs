@@ -58,7 +58,7 @@ impl Parser {
             Token::Variable => self.when_variable(),
             Token::Return => self.when_return(),
             Token::Plus | Token::Minus | Token::Multiply | Token::Divide 
-                | Token::Assign => self.when_operation(),
+                | Token::Assign | Token::Equal => self.when_operation(),
             token => vec![Element::Other(token.clone())],
         }
     }
