@@ -12,6 +12,14 @@ fun main {
     
     foo({ 5 + 2 }, 'a')
 
+    if { b == a } {
+        c = 10
+    } elif { b == b } {
+        c = 15
+    } else {
+        c = 20
+    }
+
     ret
 }
 
