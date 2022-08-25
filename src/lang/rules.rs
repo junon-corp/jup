@@ -106,6 +106,32 @@ impl Rule {
                     ),
                 ]
             }
+            Token::ConditionElif => {
+                vec![
+                    rule!(
+                        RuleItem::Main(Token::ConditionElif),
+                        RuleItem::Expression,
+                        RuleItem::Expression
+                    )
+                ]
+            }
+            Token::ConditionElse => {
+                vec![
+                    rule!(
+                        RuleItem::Main(Token::ConditionElse),
+                        RuleItem::Expression
+                    )
+                ]
+            }
+            Token::ConditionIf => {
+                vec![
+                    rule!(
+                        RuleItem::Main(Token::ConditionIf),
+                        RuleItem::Expression,
+                        RuleItem::Expression
+                    )
+                ]
+            }
             Token::Divide => Self::from_operator(&Token::Divide),
             Token::Function => {
                 vec![
