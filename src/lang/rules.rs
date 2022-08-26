@@ -12,6 +12,7 @@ pub enum RuleItem {
     Value,
     Label,
     Expression,
+    Operation,
     Token(Token),
 
     /// Tokens to be skipped because checked by another way
@@ -120,6 +121,11 @@ impl Rule {
                         RuleItem::Main(Token::ConditionIf),
                         RuleItem::Expression,
                         RuleItem::Expression
+                    ),
+                    rule!(
+                        RuleItem::Main(Token::ConditionIf),
+                        RuleItem::Operation,
+                        RuleItem::Expression
                     )
                 ]
             }
@@ -133,6 +139,34 @@ impl Rule {
                         RuleItem::Token(Token::ParenOpen),
                         RuleItem::Skip,
                         RuleItem::Token(Token::ParenClose)
+                    ),
+                ]
+            }
+            Token::Loop => {
+                vec![
+                    rule!(
+                        RuleItem::Main(Token::Loop),
+                        RuleItem::Expression,
+                        RuleItem::Expression
+                    ),
+                    rule!(
+                        RuleItem::Main(Token::Loop),
+                        RuleItem::Operation,
+                        RuleItem::Expression
+                    )
+                ]
+            }
+            Token::LoopBreak => {
+                vec![
+                    rule!(
+                        RuleItem::Main(Token::Loop)
+                    ),
+                ]
+            }
+            Token::LoopContinue => {
+                vec![
+                    rule!(
+                        RuleItem::Main(Token::Loop)
                     ),
                 ]
             }
