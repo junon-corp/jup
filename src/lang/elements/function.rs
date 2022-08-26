@@ -8,7 +8,7 @@ use super::{
     type_::Type
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Function {
     id: Token,
     /// This element has to be `Element::Parameters`

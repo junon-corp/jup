@@ -4,7 +4,7 @@
 
 use crate::lang::tokens::Token;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Operation {
     operator: Token,
     arg1: Token,

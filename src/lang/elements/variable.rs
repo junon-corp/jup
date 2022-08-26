@@ -5,7 +5,7 @@
 use crate::lang::tokens::Token;
 use super::type_::Type;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Variable {
     id: Token,
     type_: Type,

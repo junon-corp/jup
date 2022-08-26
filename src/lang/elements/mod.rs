@@ -15,7 +15,7 @@ use type_::Type;
 use variable::Variable;
 
 /// Language's element that parsed will create from the tokens
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Element {
     Array(Vec<Token>),
     Assembly(Token),
