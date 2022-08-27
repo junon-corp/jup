@@ -58,7 +58,9 @@ impl Parser {
             Token::Variable => self.when_variable(),
             Token::Return => self.when_return(),
             Token::Plus | Token::Minus | Token::Multiply | Token::Divide 
-                | Token::Assign | Token::Equal => self.when_operation(),
+                | Token::Assign | Token::Equal | Token::LessThan 
+                | Token::LessThanOrEqual | Token::MoreThan 
+                | Token::MoreThanOrEqual => self.when_operation(),
             token => vec![Element::Other(token.clone())],
         }
     }
@@ -280,6 +282,23 @@ pub fn run_parser() {
     use crate::tokenizer::Tokenizer;
 
     let mut tokenizer = Tokenizer::from_path(Path::new("tests/parser.ju"))
+        .unwrap();
+    tokenizer.run();
+
+    println!("{:?} :\n", tokenizer.tokenized());
+
+    let mut parser = Parser::new(tokenizer.tokenized().clone());
+    parser.run();
+
+    println!("{:#?}", parser.parsed());
+}
+
+#[test]
+pub fn operations() {
+    use std::path::Path;
+    use crate::tokenizer::Tokenizer;
+
+    let mut tokenizer = Tokenizer::from_path(Path::new("tests/operations.ju"))
         .unwrap();
     tokenizer.run();
 

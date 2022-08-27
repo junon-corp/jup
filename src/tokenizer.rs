@@ -119,6 +119,40 @@ impl Tokenizer {
             self.token = Token::NewLine.to_string();
             self.push_token();
         }
+
+        // Because the clone of `self.tokenized` is enumerated, and not the real
+        // `self.tokenized`, when `self.tokenized` is updated, the index of `i`
+        // becomes wrong by `1`. The `j` value permits to shift to the right 
+        // index
+        let mut j = 0;
+        
+        let mut previous_token = &Token::None;
+
+        for (i, token) in self.tokenized.clone().iter().enumerate() {
+            // Because `<=` and `>=` aren't double characters, they are found
+            // separated in the tokenized vector. Here, one of them is found,
+            // the both characters are replaced by the right token           
+            if (previous_token == &Token::MoreThan 
+                || previous_token == &Token::LessThan) 
+                && token == &Token::Assign 
+            {
+                // No needs for retrieving the old value but a warning is thrown
+                // when the value is not retrieved 
+                let _ = std::mem::replace(
+                    &mut self.tokenized[i - j - 1],             
+                    if previous_token == &Token::MoreThan { 
+                        Token::MoreThanOrEqual 
+                    } else { // means == `Token::LessThan`
+                        Token::LessThanOrEqual 
+                    }
+                );
+                   
+                self.tokenized.remove(i - j);
+                j += 1;
+            }
+            
+            previous_token = token;
+        }
     }
 
     /// Returns an immutable 2D vector of the tokenized source code

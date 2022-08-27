@@ -142,6 +142,8 @@ impl Rule {
                     ),
                 ]
             }
+            Token::LessThan => Self::from_operator(&Token::LessThan),
+            Token::LessThanOrEqual => Self::from_operator(&Token::LessThanOrEqual),
             Token::Loop => {
                 vec![
                     rule!(
@@ -171,6 +173,8 @@ impl Rule {
                 ]
             }
             Token::Minus => Self::from_operator(&Token::Minus),
+            Token::MoreThan => Self::from_operator(&Token::MoreThan),
+            Token::MoreThanOrEqual => Self::from_operator(&Token::MoreThanOrEqual),
             Token::Multiply => Self::from_operator(&Token::Multiply),
             Token::Point => {
                 vec![rule!(
