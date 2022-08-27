@@ -1,0 +1,13 @@
+fun main {
+    let z: int = { a < a }
+    z = { b > a }
+
+    z = { a <= b }
+    z = { b >= a }
+    z = { a <= b }
+    z = { b >= a }
+
+    let w: int = { 5 + 10 }
+    
+    ret
+}

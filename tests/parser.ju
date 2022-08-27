@@ -12,7 +12,7 @@ fun main {
     
     foo({ 5 + 2 }, 'a')
 
-    if { b == a } {
+    if b == a {
         c = 10
     } else {
         c = 20
